@@ -1,5 +1,7 @@
 # B2 Second Brain - Backend
 
+sk-bd27b3162b924121a1c70bb7a52aa805
+
 A FastAPI-based backend for the B2 Second Brain personal knowledge management system.
 
 ## Features

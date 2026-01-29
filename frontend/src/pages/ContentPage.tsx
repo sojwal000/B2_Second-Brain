@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDropzone } from 'react-dropzone'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -16,10 +16,13 @@ import {
   Star,
   PushPin,
   MoreVert,
+  Mic,
+  Stop,
 } from '@mui/icons-material'
 import { Card, CardContent, Button, Input, Badge, Modal, TextArea } from '../components/ui'
 import { useContentStore } from '../store/contentStore'
 import type { Content, ContentType } from '../types'
+import toast from 'react-hot-toast'
 
 const contentTypeIcons: Record<ContentType, React.ElementType> = {
   text: Description,
@@ -66,6 +69,16 @@ export default function ContentPage() {
   // Text content form
   const [textTitle, setTextTitle] = useState('')
   const [textContent, setTextContent] = useState('')
+
+  // Audio recording
+  const [showRecordModal, setShowRecordModal] = useState(false)
+  const [isRecording, setIsRecording] = useState(false)
+  const [recordingTime, setRecordingTime] = useState(0)
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
+  const [recordingTitle, setRecordingTitle] = useState('')
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const audioChunksRef = useRef<Blob[]>([])
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     fetchContents()
@@ -121,6 +134,100 @@ export default function ContentPage() {
     }
   }
 
+  // Audio Recording Functions
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const mediaRecorder = new MediaRecorder(stream)
+      mediaRecorderRef.current = mediaRecorder
+      audioChunksRef.current = []
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data)
+        }
+      }
+
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+        setAudioBlob(audioBlob)
+        stream.getTracks().forEach(track => track.stop())
+      }
+
+      mediaRecorder.start()
+      setIsRecording(true)
+      setRecordingTime(0)
+
+      // Start timer
+      timerRef.current = setInterval(() => {
+        setRecordingTime(prev => prev + 1)
+      }, 1000)
+
+      toast.success('🎤 Recording started...')
+    } catch (error) {
+      console.error('Failed to start recording:', error)
+      toast.error('Failed to access microphone. Please allow microphone access.')
+    }
+  }
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop()
+      setIsRecording(false)
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+        timerRef.current = null
+      }
+      toast.success('Recording stopped')
+    }
+  }
+
+  const cancelRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop()
+    }
+    setIsRecording(false)
+    setAudioBlob(null)
+    setRecordingTime(0)
+    setRecordingTitle('')
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+      timerRef.current = null
+    }
+    setShowRecordModal(false)
+  }
+
+  const saveRecording = async () => {
+    if (!audioBlob) {
+      toast.error('No recording to save')
+      return
+    }
+
+    // Generate safe filename (no special characters)
+    const now = new Date()
+    const timestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`
+    const safeTitle = recordingTitle.trim().replace(/[<>:"/\\|?*]/g, '_') || `Recording_${timestamp}`
+    const file = new File([audioBlob], `${safeTitle}.webm`, { type: 'audio/webm' })
+
+    setIsUploading(true)
+    try {
+      await uploadFile(file)
+      toast.success('Recording saved successfully!')
+      cancelRecording()
+    } catch (error) {
+      console.error('Failed to save recording:', error)
+      toast.error('Failed to save recording')
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+  }
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     setFilters({ search: searchQuery })
@@ -138,6 +245,10 @@ export default function ContentPage() {
           <Button variant="secondary" onClick={() => setShowTextModal(true)}>
             <Add fontSize="small" className="mr-1" />
             Add Text
+          </Button>
+          <Button variant="secondary" onClick={() => setShowRecordModal(true)}>
+            <Mic fontSize="small" className="mr-1" />
+            Record Audio
           </Button>
           <Button onClick={() => setShowUploadModal(true)}>
             <CloudUpload fontSize="small" className="mr-1" />
@@ -303,6 +414,104 @@ export default function ContentPage() {
             </Button>
             <Button onClick={handleTextSubmit} disabled={!textTitle || !textContent}>
               Save
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Record Audio Modal */}
+      <Modal
+        isOpen={showRecordModal}
+        onClose={cancelRecording}
+        title="Record Audio"
+        size="md"
+      >
+        <div className="space-y-6">
+          <Input
+            label="Recording Title (optional)"
+            placeholder="Enter a title for your recording..."
+            value={recordingTitle}
+            onChange={(e) => setRecordingTitle(e.target.value)}
+          />
+
+          <div className="flex flex-col items-center py-8">
+            {/* Recording indicator */}
+            <div className={`w-24 h-24 rounded-full flex items-center justify-center mb-4 transition-all ${
+              isRecording 
+                ? 'bg-red-500/20 animate-pulse' 
+                : audioBlob 
+                  ? 'bg-green-500/20' 
+                  : 'bg-secondary-700'
+            }`}>
+              <Mic className={`text-4xl ${
+                isRecording 
+                  ? 'text-red-500' 
+                  : audioBlob 
+                    ? 'text-green-500' 
+                    : 'text-secondary-400'
+              }`} />
+            </div>
+
+            {/* Timer */}
+            <div className="text-3xl font-mono text-white mb-4">
+              {formatTime(recordingTime)}
+            </div>
+
+            {/* Status text */}
+            <p className="text-secondary-400 text-sm">
+              {isRecording 
+                ? 'Recording in progress...' 
+                : audioBlob 
+                  ? 'Recording complete! Ready to save.' 
+                  : 'Click the button below to start recording'}
+            </p>
+          </div>
+
+          {/* Audio preview */}
+          {audioBlob && !isRecording && (
+            <div className="bg-secondary-800 rounded-lg p-4">
+              <audio 
+                controls 
+                className="w-full" 
+                src={URL.createObjectURL(audioBlob)}
+              />
+            </div>
+          )}
+
+          {/* Controls */}
+          <div className="flex justify-center gap-4">
+            {!isRecording && !audioBlob && (
+              <Button onClick={startRecording} className="px-8">
+                <Mic fontSize="small" className="mr-2" />
+                Start Recording
+              </Button>
+            )}
+
+            {isRecording && (
+              <Button variant="danger" onClick={stopRecording} className="px-8">
+                <Stop fontSize="small" className="mr-2" />
+                Stop Recording
+              </Button>
+            )}
+
+            {audioBlob && !isRecording && (
+              <>
+                <Button variant="secondary" onClick={() => {
+                  setAudioBlob(null)
+                  setRecordingTime(0)
+                }}>
+                  Record Again
+                </Button>
+                <Button onClick={saveRecording} disabled={isUploading}>
+                  {isUploading ? 'Saving...' : 'Save Recording'}
+                </Button>
+              </>
+            )}
+          </div>
+
+          <div className="flex justify-end">
+            <Button variant="ghost" onClick={cancelRecording}>
+              Cancel
             </Button>
           </div>
         </div>

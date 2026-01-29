@@ -59,7 +59,7 @@ export const contentService = {
   },
 
   async update(id: number, data: Partial<Content>): Promise<Content> {
-    const response = await api.put<Content>(`/content/${id}`, data)
+    const response = await api.patch<Content>(`/content/${id}`, data)
     return response.data
   },
 

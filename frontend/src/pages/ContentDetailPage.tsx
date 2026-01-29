@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
@@ -12,6 +12,8 @@ import {
   Refresh,
   Style,
   Task,
+  VolumeUp,
+  Stop,
 } from '@mui/icons-material'
 import { Button, Card, CardContent, Badge, Modal, Input } from '../components/ui'
 import { useContentStore } from '../store/contentStore'
@@ -38,6 +40,10 @@ export default function ContentDetailPage() {
   const [flashcardCount, setFlashcardCount] = useState(10)
   const [editTitle, setEditTitle] = useState('')
   const [editTags, setEditTags] = useState('')
+  
+  // Read Aloud state
+  const [isSpeaking, setIsSpeaking] = useState(false)
+  const speechSynthRef = useRef<SpeechSynthesisUtterance | null>(null)
 
   useEffect(() => {
     if (id) {
@@ -137,6 +143,79 @@ export default function ContentDetailPage() {
     }
   }
 
+  // Cleanup speech on unmount
+  useEffect(() => {
+    return () => {
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel()
+      }
+    }
+  }, [])
+
+  const handleReadAloud = () => {
+    if (!content) return
+
+    // Check for browser support
+    if (!window.speechSynthesis) {
+      toast.error('Text-to-speech is not supported in this browser')
+      return
+    }
+
+    // If already speaking, stop
+    if (isSpeaking) {
+      window.speechSynthesis.cancel()
+      setIsSpeaking(false)
+      toast.success('Stopped reading')
+      return
+    }
+
+    // Get the text to read
+    const textToRead = content.text_content || content.summary || content.title
+    
+    if (!textToRead) {
+      toast.error('No text content available to read')
+      return
+    }
+
+    // Create utterance
+    const utterance = new SpeechSynthesisUtterance(textToRead)
+    speechSynthRef.current = utterance
+
+    // Configure voice settings
+    utterance.rate = 1.0  // Speed: 0.1 to 10
+    utterance.pitch = 1.0 // Pitch: 0 to 2
+    utterance.volume = 1.0 // Volume: 0 to 1
+
+    // Try to get a good English voice
+    const voices = window.speechSynthesis.getVoices()
+    const englishVoice = voices.find(voice => 
+      voice.lang.startsWith('en') && voice.name.includes('Google')
+    ) || voices.find(voice => voice.lang.startsWith('en'))
+    
+    if (englishVoice) {
+      utterance.voice = englishVoice
+    }
+
+    // Event handlers
+    utterance.onstart = () => {
+      setIsSpeaking(true)
+      toast.success('🔊 Reading aloud...')
+    }
+
+    utterance.onend = () => {
+      setIsSpeaking(false)
+    }
+
+    utterance.onerror = (event) => {
+      console.error('Speech synthesis error:', event)
+      setIsSpeaking(false)
+      toast.error('Failed to read content')
+    }
+
+    // Start speaking
+    window.speechSynthesis.speak(utterance)
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -205,6 +284,23 @@ export default function ContentDetailPage() {
         >
           <Archive fontSize="small" className="mr-1" />
           {content.is_archived ? 'Archived' : 'Archive'}
+        </Button>
+        <Button
+          variant={isSpeaking ? 'primary' : 'secondary'}
+          size="sm"
+          onClick={handleReadAloud}
+        >
+          {isSpeaking ? (
+            <>
+              <Stop fontSize="small" className="mr-1" />
+              Stop Reading
+            </>
+          ) : (
+            <>
+              <VolumeUp fontSize="small" className="mr-1" />
+              Read Aloud
+            </>
+          )}
         </Button>
         <div className="flex-1" />
         <Button variant="ghost" size="sm" onClick={() => setShowFlashcardModal(true)} disabled={isProcessing}>

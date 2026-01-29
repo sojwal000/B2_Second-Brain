@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { format, isPast, isToday } from 'date-fns'
 import {
@@ -11,6 +11,9 @@ import {
   MoreVert,
   Delete,
   Edit,
+  Mic,
+  MicOff,
+  Stop,
 } from '@mui/icons-material'
 import { Button, Card, CardContent, Input, Modal, TextArea, Badge } from '../components/ui'
 import { taskService } from '../services'
@@ -37,6 +40,11 @@ export default function TasksPage() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [filter, setFilter] = useState<TaskStatus | 'all'>('all')
 
+  // Voice recording state
+  const [isRecording, setIsRecording] = useState(false)
+  const [isProcessingVoice, setIsProcessingVoice] = useState(false)
+  const recognitionRef = useRef<any>(null)
+
   // Form state
   const [newTitle, setNewTitle] = useState('')
   const [newDescription, setNewDescription] = useState('')
@@ -57,6 +65,125 @@ export default function TasksPage() {
       console.error('Failed to load tasks:', error)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  // Voice recording functions
+  const startVoiceRecording = async () => {
+    // Check for browser support
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    
+    if (!SpeechRecognition) {
+      toast.error('Voice recognition is not supported in this browser. Please use Chrome or Edge.')
+      return
+    }
+
+    // First, request microphone permission explicitly
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      // Stop the stream immediately, we just needed to get permission
+      stream.getTracks().forEach(track => track.stop())
+    } catch (err) {
+      console.error('Microphone permission error:', err)
+      toast.error('Microphone access denied. Please allow microphone access in your browser settings.')
+      return
+    }
+
+    const recognition = new SpeechRecognition()
+    recognition.continuous = true  // Keep listening until manually stopped
+    recognition.interimResults = true  // Show interim results
+    recognition.lang = 'en-US'
+    recognition.maxAlternatives = 1
+
+    let finalTranscript = ''
+    let silenceTimer: NodeJS.Timeout | null = null
+
+    recognition.onstart = () => {
+      setIsRecording(true)
+      finalTranscript = ''
+      toast.success('🎤 Listening... Speak now and click Stop when done', { duration: 4000 })
+    }
+
+    recognition.onresult = (event: any) => {
+      let interimTranscript = ''
+      
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript + ' '
+        } else {
+          interimTranscript += transcript
+        }
+      }
+
+      // Reset silence timer on any speech
+      if (silenceTimer) clearTimeout(silenceTimer)
+      
+      // Auto-stop after 2 seconds of silence if we have a final transcript
+      if (finalTranscript.trim()) {
+        silenceTimer = setTimeout(() => {
+          if (recognitionRef.current && finalTranscript.trim()) {
+            recognition.stop()
+          }
+        }, 2000)
+      }
+      
+      console.log('Interim:', interimTranscript, 'Final:', finalTranscript)
+    }
+
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error:', event.error)
+      setIsRecording(false)
+      
+      if (event.error === 'not-allowed') {
+        toast.error('Microphone access denied. Please allow microphone access in browser settings.')
+      } else if (event.error === 'no-speech') {
+        toast.error('No speech detected. Make sure your microphone is working and speak clearly.')
+      } else if (event.error === 'audio-capture') {
+        toast.error('No microphone found. Please connect a microphone and try again.')
+      } else if (event.error === 'network') {
+        toast.error('Network error. Please check your internet connection.')
+      } else {
+        toast.error(`Voice recognition error: ${event.error}`)
+      }
+    }
+
+    recognition.onend = async () => {
+      setIsRecording(false)
+      if (silenceTimer) clearTimeout(silenceTimer)
+      
+      const trimmedTranscript = finalTranscript.trim()
+      
+      if (trimmedTranscript) {
+        setIsProcessingVoice(true)
+        try {
+          const task = await taskService.create({
+            title: trimmedTranscript,
+            priority: 'medium',
+          })
+          setTasks((prev) => [task, ...prev])
+          toast.success(`✅ Task added: "${trimmedTranscript}"`)
+        } catch (error) {
+          toast.error('Failed to create task from voice')
+        } finally {
+          setIsProcessingVoice(false)
+        }
+      }
+    }
+
+    recognitionRef.current = recognition
+    
+    try {
+      recognition.start()
+    } catch (err) {
+      console.error('Failed to start recognition:', err)
+      toast.error('Failed to start voice recognition. Please try again.')
+    }
+  }
+
+  const stopVoiceRecording = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop()
     }
   }
 
@@ -106,9 +233,9 @@ export default function TasksPage() {
   }
 
   // Group tasks by status
-  const todoTasks = tasks.filter((t) => t.status === 'todo')
+  const todoTasks = tasks.filter((t) => t.status === 'pending')
   const inProgressTasks = tasks.filter((t) => t.status === 'in_progress')
-  const doneTasks = tasks.filter((t) => t.status === 'done')
+  const doneTasks = tasks.filter((t) => t.status === 'completed')
 
   if (isLoading) {
     return (
@@ -126,15 +253,39 @@ export default function TasksPage() {
           <h1 className="text-2xl font-bold text-white">Tasks</h1>
           <p className="text-secondary-400">Manage your to-dos and action items</p>
         </div>
-        <Button onClick={() => setShowCreateModal(true)}>
-          <Add fontSize="small" className="mr-1" />
-          Add Task
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant={isRecording ? 'danger' : 'secondary'}
+            onClick={isRecording ? stopVoiceRecording : startVoiceRecording}
+            disabled={isProcessingVoice}
+          >
+            {isProcessingVoice ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
+                Processing...
+              </>
+            ) : isRecording ? (
+              <>
+                <Stop fontSize="small" className="mr-1" />
+                Stop
+              </>
+            ) : (
+              <>
+                <Mic fontSize="small" className="mr-1" />
+                Add Voice
+              </>
+            )}
+          </Button>
+          <Button onClick={() => setShowCreateModal(true)}>
+            <Add fontSize="small" className="mr-1" />
+            Add Task
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
       <div className="flex items-center gap-2">
-        {(['all', 'todo', 'in_progress', 'done'] as const).map((status) => (
+        {(['all', 'pending', 'in_progress', 'completed'] as const).map((status) => (
           <Button
             key={status}
             variant={filter === status ? 'primary' : 'ghost'}
@@ -143,7 +294,7 @@ export default function TasksPage() {
           >
             {status === 'all'
               ? 'All'
-              : status === 'todo'
+              : status === 'pending'
               ? 'To Do'
               : status === 'in_progress'
               ? 'In Progress'
@@ -281,7 +432,7 @@ interface TaskCardProps {
 }
 
 function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
-  const isDone = task.status === 'done'
+  const isDone = task.status === 'completed'
   const isOverdue = task.due_date && isPast(new Date(task.due_date)) && !isDone
   const isDueToday = task.due_date && isToday(new Date(task.due_date))
 

@@ -37,11 +37,14 @@ async def create_task(
         content_id=task_data.content_id,
         title=task_data.title,
         description=task_data.description,
-        status=task_data.status or TaskStatus.TODO,
+        status=task_data.status or TaskStatus.PENDING,
         priority=task_data.priority or DBTaskPriority.MEDIUM,
         due_date=task_data.due_date,
+        due_time=task_data.due_time,
+        estimated_duration_minutes=task_data.estimated_duration_minutes,
         tags=task_data.tags,
-        category=task_data.category
+        project=task_data.project,
+        assigned_to=task_data.assigned_to
     )
     
     db.add(task)
@@ -57,7 +60,7 @@ async def list_tasks(
     page_size: int = Query(20, ge=1, le=100),
     status_filter: Optional[TaskStatus] = None,
     priority: Optional[DBTaskPriority] = None,
-    category: Optional[str] = None,
+    project: Optional[str] = None,
     overdue_only: bool = False,
     due_today: bool = False,
     due_this_week: bool = False,
@@ -76,15 +79,15 @@ async def list_tasks(
     if priority:
         query = query.where(Task.priority == priority)
     
-    if category:
-        query = query.where(Task.category == category)
+    if project:
+        query = query.where(Task.project == project)
     
     now = datetime.utcnow()
     
     if overdue_only:
         query = query.where(
             Task.due_date < now,
-            Task.status != TaskStatus.DONE
+            Task.status != TaskStatus.COMPLETED
         )
     
     if due_today:
@@ -139,8 +142,6 @@ async def list_tasks(
             status=t.status,
             priority=t.priority,
             due_date=t.due_date,
-            is_overdue=t.due_date < now if t.due_date and t.status != TaskStatus.DONE else False,
-            category=t.category,
             content_id=t.content_id,
             created_at=t.created_at
         ).model_dump()
@@ -202,10 +203,10 @@ async def update_task(
     
     update_dict = update_data.model_dump(exclude_unset=True)
     
-    # Handle status change to DONE
-    if "status" in update_dict and update_dict["status"] == TaskStatus.DONE:
+    # Handle status change to COMPLETED
+    if "status" in update_dict and update_dict["status"] == TaskStatus.COMPLETED:
         task.completed_at = datetime.utcnow()
-    elif "status" in update_dict and update_dict["status"] != TaskStatus.DONE:
+    elif "status" in update_dict and update_dict["status"] != TaskStatus.COMPLETED:
         task.completed_at = None
     
     for field, value in update_dict.items():
@@ -268,7 +269,7 @@ async def complete_tasks(
     
     now = datetime.utcnow()
     for task in tasks:
-        task.status = TaskStatus.DONE
+        task.status = TaskStatus.COMPLETED
         task.completed_at = now
     
     await db.commit()
@@ -315,7 +316,7 @@ async def toggle_task_status(
     user_id: int = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db)
 ):
-    """Toggle task between TODO and DONE."""
+    """Toggle task between PENDING and COMPLETED."""
     result = await db.execute(
         select(Task).where(Task.id == task_id, Task.user_id == user_id)
     )
@@ -327,11 +328,11 @@ async def toggle_task_status(
             detail="Task not found"
         )
     
-    if task.status == TaskStatus.DONE:
-        task.status = TaskStatus.TODO
+    if task.status == TaskStatus.COMPLETED:
+        task.status = TaskStatus.PENDING
         task.completed_at = None
     else:
-        task.status = TaskStatus.DONE
+        task.status = TaskStatus.COMPLETED
         task.completed_at = datetime.utcnow()
     
     await db.commit()
@@ -445,7 +446,7 @@ async def get_task_stats(
         select(func.count()).where(
             Task.user_id == user_id,
             Task.due_date < now,
-            Task.status != TaskStatus.DONE
+            Task.status != TaskStatus.COMPLETED
         )
     )
     overdue = overdue_result.scalar() or 0
@@ -458,7 +459,7 @@ async def get_task_stats(
             Task.user_id == user_id,
             Task.due_date >= today_start,
             Task.due_date < today_end,
-            Task.status != TaskStatus.DONE
+            Task.status != TaskStatus.COMPLETED
         )
     )
     due_today = due_today_result.scalar() or 0
@@ -470,7 +471,7 @@ async def get_task_stats(
             Task.user_id == user_id,
             Task.due_date >= now,
             Task.due_date <= week_end,
-            Task.status != TaskStatus.DONE
+            Task.status != TaskStatus.COMPLETED
         )
     )
     due_this_week = due_week_result.scalar() or 0
@@ -481,7 +482,7 @@ async def get_task_stats(
         select(func.count()).where(
             Task.user_id == user_id,
             Task.completed_at >= week_start,
-            Task.status == TaskStatus.DONE
+            Task.status == TaskStatus.COMPLETED
         )
     )
     completed_this_week = completed_result.scalar() or 0
@@ -536,17 +537,17 @@ async def get_tasks_for_content(
 # Categories
 # ============================================================================
 
-@router.get("/categories", response_model=List[str])
-async def get_task_categories(
+@router.get("/projects", response_model=List[str])
+async def get_task_projects(
     user_id: int = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db)
 ):
-    """Get all unique task categories."""
+    """Get all unique task projects."""
     result = await db.execute(
-        select(Task.category)
-        .where(Task.user_id == user_id, Task.category.isnot(None))
+        select(Task.project)
+        .where(Task.user_id == user_id, Task.project.isnot(None))
         .distinct()
     )
-    categories = [row[0] for row in result.all() if row[0]]
+    projects = [row[0] for row in result.all() if row[0]]
     
-    return categories
+    return projects

@@ -1,0 +1,583 @@
+================================================================================
+                    B2 SECOND BRAIN - PROJECT PRESENTATION DATA
+================================================================================
+
+================================================================================
+SLIDE 1: TITLE SLIDE
+================================================================================
+
+Project Name: B2 Second Brain
+Tagline: AI-Powered Personal Knowledge Management System
+Type: Full-Stack Web Application
+Developer: [Your Name]
+Date: January 2026
+
+================================================================================
+SLIDE 2: PROBLEM STATEMENT
+================================================================================
+
+CHALLENGES IN MODERN INFORMATION MANAGEMENT:
+
+1. Information Overload
+   - We consume massive amounts of content daily (articles, videos, documents)
+   - Difficult to remember and retrieve important information when needed
+
+2. Fragmented Knowledge
+   - Notes scattered across multiple apps and platforms
+   - No connection between related pieces of information
+
+3. Inefficient Learning
+   - Traditional note-taking doesn't promote long-term retention
+   - Manual flashcard creation is time-consuming
+
+4. Task Management Gap
+   - Action items buried in meeting notes and documents
+   - Manual extraction of tasks is tedious
+
+5. Accessibility Issues
+   - Content locked in different formats (PDF, images, audio)
+   - No unified way to search across all content types
+
+================================================================================
+SLIDE 3: SOLUTION - B2 SECOND BRAIN
+================================================================================
+
+B2 Second Brain is an AI-powered personal knowledge management system that:
+
+✓ Centralizes all your knowledge in one place
+✓ Uses AI to automatically process and understand your content
+✓ Generates flashcards for effective learning with spaced repetition
+✓ Extracts tasks automatically from your documents
+✓ Enables natural language search across your entire knowledge base
+✓ Provides voice input for hands-free content creation
+✓ Offers text-to-speech for consuming content without reading
+
+================================================================================
+SLIDE 4: KEY FEATURES OVERVIEW
+================================================================================
+
+1. 📚 MULTIMODAL CONTENT MANAGEMENT
+   - Upload text, PDFs, images, audio, video
+   - Import content from URLs
+   - Live audio recording
+   - Automatic content processing and summarization
+
+2. 🤖 AI-POWERED ASSISTANT
+   - RAG (Retrieval-Augmented Generation) Q&A
+   - Chat with your knowledge base
+   - Semantic search using natural language
+
+3. 🎴 SMART FLASHCARD SYSTEM
+   - AI-generated flashcards from content
+   - FSRS spaced repetition algorithm
+   - Deck organization and progress tracking
+
+4. ✅ INTELLIGENT TASK MANAGEMENT
+   - Voice-to-task creation
+   - AI task extraction from documents
+   - Kanban board with priorities
+
+5. 🔊 ACCESSIBILITY FEATURES
+   - Text-to-speech (Read Aloud)
+   - Speech-to-text (Voice Input)
+
+================================================================================
+SLIDE 5: SYSTEM ARCHITECTURE
+================================================================================
+
+FRONTEND (Client Layer)
+┌─────────────────────────────────────────────────────────────┐
+│  React 18 + TypeScript + Vite                               │
+│  ├── Components: UI Library (Custom)                        │
+│  ├── State: Zustand (Global State Management)               │
+│  ├── Styling: Tailwind CSS + Framer Motion                  │
+│  ├── API Client: Axios                                      │
+│  └── Speech APIs: Web Speech API (STT/TTS)                  │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+BACKEND (API Layer)
+┌─────────────────────────────────────────────────────────────┐
+│  FastAPI (Python 3.11+)                                     │
+│  ├── Authentication: JWT (OAuth2)                           │
+│  ├── API Routes: RESTful Endpoints                          │
+│  ├── Background Tasks: Async Processing                     │
+│  └── File Handling: Multimodal Upload                       │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+AI/ML SERVICES
+┌─────────────────────────────────────────────────────────────┐
+│  ├── LLM: Google Gemini (gemini-2.5-flash-lite)             │
+│  ├── Embeddings: SentenceTransformers                       │
+│  ├── OCR: Tesseract/PaddleOCR                               │
+│  ├── STT: OpenAI Whisper                                    │
+│  └── RAG: Custom Pipeline with Vector Search                │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+DATABASE LAYER
+┌─────────────────────────────────────────────────────────────┐
+│  ├── PostgreSQL: Primary Database (SQLAlchemy 2.0)          │
+│  ├── Vector Storage: Embeddings for Semantic Search         │
+│  └── File Storage: Local Uploads Directory                  │
+└─────────────────────────────────────────────────────────────┘
+
+================================================================================
+SLIDE 6: TECHNOLOGY STACK
+================================================================================
+
+FRONTEND TECHNOLOGIES:
+┌────────────────────────────────────────┐
+│ Framework      │ React 18 + TypeScript │
+│ Build Tool     │ Vite                  │
+│ Styling        │ Tailwind CSS          │
+│ Animations     │ Framer Motion         │
+│ State Mgmt     │ Zustand               │
+│ HTTP Client    │ Axios                 │
+│ Icons          │ Material UI Icons     │
+│ Notifications  │ React Hot Toast       │
+│ Markdown       │ React Markdown        │
+│ Drag & Drop    │ React Dropzone        │
+└────────────────────────────────────────┘
+
+BACKEND TECHNOLOGIES:
+┌────────────────────────────────────────┐
+│ Framework      │ FastAPI               │
+│ Language       │ Python 3.11+          │
+│ Database ORM   │ SQLAlchemy 2.0        │
+│ Migrations     │ Alembic               │
+│ Auth           │ JWT + OAuth2          │
+│ Validation     │ Pydantic              │
+│ Async          │ asyncio + uvicorn     │
+└────────────────────────────────────────┘
+
+AI/ML TECHNOLOGIES:
+┌────────────────────────────────────────┐
+│ LLM Provider   │ Google Gemini API     │
+│ Embeddings     │ SentenceTransformers  │
+│ OCR Engine     │ Tesseract/PaddleOCR   │
+│ Speech-to-Text │ OpenAI Whisper        │
+└────────────────────────────────────────┘
+
+DATABASE:
+┌────────────────────────────────────────┐
+│ Primary DB     │ PostgreSQL 14+        │
+│ Vector Search  │ pgvector extension    │
+└────────────────────────────────────────┘
+
+================================================================================
+SLIDE 7: FEATURE DEEP DIVE - CONTENT MANAGEMENT
+================================================================================
+
+SUPPORTED CONTENT TYPES:
+• Text/Notes - Direct text input with rich formatting
+• Documents - PDF, DOCX, TXT, Markdown files
+• Images - PNG, JPG, JPEG, GIF (with OCR text extraction)
+• Audio - MP3, WAV, WebM (with speech-to-text transcription)
+• Video - MP4, WebM (audio track transcription)
+• URLs - Web page content extraction
+
+CONTENT PROCESSING PIPELINE:
+1. Upload → File validation and storage
+2. Extract → Text extraction (OCR for images, STT for audio)
+3. Analyze → AI summarization and key point extraction
+4. Embed → Generate vector embeddings for search
+5. Store → Save to database with metadata
+
+ORGANIZATION FEATURES:
+• Tags and Subjects for categorization
+• Favorites and Pinning for quick access
+• Archive for decluttering
+• Full-text and semantic search
+
+================================================================================
+SLIDE 8: FEATURE DEEP DIVE - AI ASSISTANT (RAG)
+================================================================================
+
+WHAT IS RAG?
+Retrieval-Augmented Generation combines:
+• Information Retrieval - Finding relevant content from your knowledge base
+• AI Generation - Using LLM to generate contextual answers
+
+HOW IT WORKS:
+┌─────────────────────────────────────────────────────────────┐
+│ User Query: "What did I learn about machine learning?"      │
+│                           │                                  │
+│                           ▼                                  │
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ 1. EMBED: Convert query to vector embedding            │ │
+│ └─────────────────────────────────────────────────────────┘ │
+│                           │                                  │
+│                           ▼                                  │
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ 2. SEARCH: Find similar content vectors in database    │ │
+│ └─────────────────────────────────────────────────────────┘ │
+│                           │                                  │
+│                           ▼                                  │
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ 3. RETRIEVE: Get top-k most relevant documents         │ │
+│ └─────────────────────────────────────────────────────────┘ │
+│                           │                                  │
+│                           ▼                                  │
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ 4. GENERATE: LLM creates answer using retrieved context│ │
+│ └─────────────────────────────────────────────────────────┘ │
+│                           │                                  │
+│                           ▼                                  │
+│ Response: "Based on your notes, you learned about..."       │
+└─────────────────────────────────────────────────────────────┘
+
+================================================================================
+SLIDE 9: FEATURE DEEP DIVE - FLASHCARD SYSTEM
+================================================================================
+
+FSRS ALGORITHM (Free Spaced Repetition Scheduler):
+Modern, research-backed algorithm that optimizes review timing
+
+KEY CONCEPTS:
+• Difficulty - How hard the card is (0-10 scale)
+• Stability - How well you remember (affects interval)
+• Retrievability - Probability of recall (90% target)
+
+MASTERY LEVELS:
+┌──────────────┬────────────────────────────────────────┐
+│ NEW          │ Card never reviewed                    │
+│ LEARNING     │ Initial learning phase (short intervals)│
+│ YOUNG        │ Intervals < 21 days                    │
+│ MATURE       │ Intervals > 21 days (well learned)     │
+└──────────────┴────────────────────────────────────────┘
+
+REVIEW RATINGS:
+• Again (1) - Forgot, reset to learning
+• Hard (2) - Difficult recall, shorter interval
+• Good (3) - Normal recall, standard interval
+• Easy (4) - Effortless recall, longer interval
+
+AI GENERATION:
+• Analyzes content for key concepts
+• Creates question-answer pairs automatically
+• Includes explanations for deeper understanding
+
+================================================================================
+SLIDE 10: FEATURE DEEP DIVE - TASK MANAGEMENT
+================================================================================
+
+TASK CREATION METHODS:
+1. Manual Input - Traditional form-based entry
+2. Voice Input - Speak to create tasks (Web Speech API)
+3. AI Extraction - Automatically extract from documents
+
+TASK PROPERTIES:
+• Title and Description
+• Priority Levels: Urgent, High, Medium, Low
+• Status: Pending, In Progress, Completed
+• Due Date and Time
+• Project/Category grouping
+• Tags for organization
+
+KANBAN BOARD VIEW:
+┌─────────────────┬─────────────────┬─────────────────┐
+│     TO DO       │   IN PROGRESS   │      DONE       │
+├─────────────────┼─────────────────┼─────────────────┤
+│ • Task 1        │ • Task 3        │ • Task 5        │
+│ • Task 2        │ • Task 4        │ • Task 6        │
+│                 │                 │ • Task 7        │
+└─────────────────┴─────────────────┴─────────────────┘
+
+================================================================================
+SLIDE 11: FEATURE DEEP DIVE - ACCESSIBILITY
+================================================================================
+
+TEXT-TO-SPEECH (Read Aloud):
+• Uses Web Speech Synthesis API
+• Reads content, summaries, and notes aloud
+• Configurable voice, speed, and pitch
+• Toggle on/off with single click
+
+SPEECH-TO-TEXT (Voice Input):
+• Live audio recording with visualization
+• Real-time speech recognition
+• Hands-free task creation
+• Voice notes that get transcribed
+
+BENEFITS:
+• Accessibility for visually impaired users
+• Multitasking - listen while doing other work
+• Faster input - speaking is 3x faster than typing
+• Reduced screen time
+
+================================================================================
+SLIDE 12: DATABASE SCHEMA (KEY TABLES)
+================================================================================
+
+USERS TABLE:
+• id, email, hashed_password
+• created_at, updated_at
+
+CONTENTS TABLE:
+• id, user_id, title, content_type
+• text_content, summary, file_path
+• subjects[], tags[]
+• is_favorite, is_pinned, is_archived
+• embeddings (vector)
+
+DECKS TABLE:
+• id, user_id, name, description
+• subject, card_count
+
+FLASHCARDS TABLE:
+• id, deck_id, question, answer, explanation
+• difficulty, stability, retrievability
+• mastery_level, next_review, last_review
+
+TASKS TABLE:
+• id, user_id, title, description
+• status, priority, due_date
+• project, tags[], completed_at
+
+================================================================================
+SLIDE 13: API ENDPOINTS OVERVIEW
+================================================================================
+
+AUTHENTICATION:
+POST   /api/auth/register     - Create new account
+POST   /api/auth/login        - Login (get JWT token)
+POST   /api/auth/refresh      - Refresh access token
+GET    /api/auth/me           - Get current user
+
+CONTENT:
+POST   /api/content/upload    - Upload file
+POST   /api/content/text      - Create text content
+GET    /api/content           - List all content
+GET    /api/content/{id}      - Get content details
+PATCH  /api/content/{id}      - Update content
+DELETE /api/content/{id}      - Delete content
+
+FLASHCARDS:
+GET    /api/flashcards/decks  - List decks
+POST   /api/flashcards/decks  - Create deck
+GET    /api/flashcards/decks/{id}/cards    - Get cards
+POST   /api/flashcards/decks/{id}/generate - AI generate
+POST   /api/flashcards/{id}/review         - Submit review
+
+TASKS:
+GET    /api/tasks             - List tasks
+POST   /api/tasks             - Create task
+PATCH  /api/tasks/{id}        - Update task
+POST   /api/tasks/{id}/toggle - Toggle complete
+
+ASSISTANT:
+POST   /api/assistant/query   - RAG Q&A
+POST   /api/assistant/search  - Semantic search
+POST   /api/assistant/chat    - Chat session
+
+================================================================================
+SLIDE 14: USER INTERFACE SCREENSHOTS
+================================================================================
+
+[Include screenshots of:]
+1. Dashboard - Overview with stats and activity
+2. Content Library - Grid view of all content
+3. Content Detail - Individual content view with actions
+4. Flashcards - Study mode with card flip animation
+5. Tasks - Kanban board view
+6. AI Assistant - Chat interface
+7. Record Audio - Modal with recording controls
+8. Read Aloud - Button in action bar
+
+================================================================================
+SLIDE 15: SECURITY FEATURES
+================================================================================
+
+AUTHENTICATION:
+• JWT (JSON Web Tokens) for stateless auth
+• Password hashing with bcrypt
+• Access token + Refresh token pattern
+• Automatic token refresh
+
+AUTHORIZATION:
+• User-specific data isolation
+• All queries filtered by user_id
+• No cross-user data access
+
+API SECURITY:
+• CORS configuration for allowed origins
+• Rate limiting on sensitive endpoints
+• Input validation with Pydantic
+• SQL injection prevention via ORM
+
+DATA PROTECTION:
+• Passwords never stored in plain text
+• Sensitive data encrypted at rest
+• HTTPS for data in transit
+
+================================================================================
+SLIDE 16: PROJECT STRUCTURE
+================================================================================
+
+B2_SecondBrain/
+├── backend/
+│   ├── app/
+│   │   ├── api/                 # API route handlers
+│   │   │   ├── auth.py          # Authentication
+│   │   │   ├── content.py       # Content management
+│   │   │   ├── assistant.py     # AI/RAG endpoints
+│   │   │   ├── flashcards.py    # Flashcard system
+│   │   │   ├── tasks.py         # Task management
+│   │   │   └── dashboard.py     # Statistics
+│   │   ├── core/                # Core functionality
+│   │   │   ├── config.py        # Configuration
+│   │   │   ├── security.py      # JWT/Auth
+│   │   │   └── database.py      # DB connection
+│   │   ├── models/              # SQLAlchemy models
+│   │   ├── schemas/             # Pydantic schemas
+│   │   ├── services/            # Business logic
+│   │   │   ├── ai_service.py    # LLM integration
+│   │   │   ├── rag_service.py   # RAG pipeline
+│   │   │   ├── embedding_service.py
+│   │   │   └── ...
+│   │   └── main.py              # FastAPI app
+│   ├── alembic/                 # DB migrations
+│   ├── uploads/                 # File storage
+│   └── requirements.txt
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/          # Reusable UI
+│   │   ├── pages/               # Page components
+│   │   ├── services/            # API clients
+│   │   ├── store/               # Zustand stores
+│   │   ├── types/               # TypeScript types
+│   │   ├── App.tsx              # Main app
+│   │   └── main.tsx             # Entry point
+│   ├── package.json
+│   └── vite.config.ts
+│
+├── FEATURES.md
+└── README.md
+
+================================================================================
+SLIDE 17: DEVELOPMENT WORKFLOW
+================================================================================
+
+SETUP STEPS:
+1. Clone repository
+2. Set up PostgreSQL database
+3. Configure environment variables (.env)
+4. Install Python dependencies (pip install -r requirements.txt)
+5. Run database migrations (alembic upgrade head)
+6. Install frontend dependencies (npm install)
+7. Start backend server (uvicorn app.main:app --reload)
+8. Start frontend dev server (npm run dev)
+
+DEVELOPMENT TOOLS:
+• VS Code with Python and TypeScript extensions
+• Git for version control
+• Postman/Thunder Client for API testing
+• pgAdmin for database management
+
+================================================================================
+SLIDE 18: CHALLENGES & SOLUTIONS
+================================================================================
+
+CHALLENGE 1: Handling Multiple Content Types
+Solution: Created unified content processor with format-specific handlers
+(OCR for images, Whisper for audio, PDF parser for documents)
+
+CHALLENGE 2: Efficient Semantic Search
+Solution: Implemented vector embeddings with SentenceTransformers
+and optimized similarity search with indexing
+
+CHALLENGE 3: Real-time Voice Features
+Solution: Utilized Web Speech API for browser-native STT/TTS
+with fallback handling for unsupported browsers
+
+CHALLENGE 4: Flashcard Scheduling Algorithm
+Solution: Implemented FSRS (Free Spaced Repetition Scheduler)
+with proper state management for difficulty and stability
+
+CHALLENGE 5: Cross-platform File Handling
+Solution: Sanitized filenames to remove invalid characters
+and used proper path handling for Windows/Linux compatibility
+
+================================================================================
+SLIDE 19: FUTURE ENHANCEMENTS
+================================================================================
+
+PLANNED FEATURES:
+
+1. Mobile Application
+   - React Native or Flutter app
+   - Offline-first with sync
+
+2. Collaborative Features
+   - Shared knowledge bases
+   - Team workspaces
+
+3. Advanced AI Features
+   - Multi-modal understanding (images in context)
+   - Automated knowledge graph generation
+   - Personalized learning paths
+
+4. Integration Ecosystem
+   - Browser extension for web clipping
+   - Calendar integration for task scheduling
+   - Export to Anki, Notion, Obsidian
+
+5. Enhanced Analytics
+   - Learning progress visualization
+   - Productivity insights
+   - Knowledge gap identification
+
+6. Plugin System
+   - Custom content processors
+   - Third-party AI model support
+
+================================================================================
+SLIDE 20: CONCLUSION
+================================================================================
+
+B2 SECOND BRAIN:
+
+✓ Solves the information overload problem
+✓ Unifies knowledge management in one platform
+✓ Leverages AI for intelligent automation
+✓ Promotes effective learning through spaced repetition
+✓ Enhances accessibility with voice features
+✓ Built with modern, scalable technologies
+
+KEY TAKEAWAYS:
+• Full-stack development with React + FastAPI
+• AI/ML integration with LLMs and embeddings
+• Database design with PostgreSQL
+• Modern authentication with JWT
+• Accessibility-first design approach
+
+================================================================================
+SLIDE 21: THANK YOU
+================================================================================
+
+Project: B2 Second Brain
+Repository: [GitHub URL]
+Developer: [Your Name]
+Contact: [Your Email]
+
+Questions?
+
+================================================================================
+REFERENCES
+================================================================================
+
+1. FastAPI Documentation - https://fastapi.tiangolo.com/
+2. React Documentation - https://react.dev/
+3. Google Gemini API - https://ai.google.dev/
+4. FSRS Algorithm - https://github.com/open-spaced-repetition/fsrs4anki
+5. SentenceTransformers - https://www.sbert.net/
+6. Web Speech API - https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API
+7. Tailwind CSS - https://tailwindcss.com/
+8. PostgreSQL - https://www.postgresql.org/
+
+================================================================================
+END OF PRESENTATION DATA
+================================================================================

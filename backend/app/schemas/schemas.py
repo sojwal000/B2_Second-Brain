@@ -2,7 +2,7 @@
 Pydantic Schemas for API Request/Response
 """
 
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional, List, Dict, Any, Union
 from pydantic import BaseModel, Field, EmailStr, ConfigDict
 from enum import Enum
@@ -282,7 +282,7 @@ class TaskBase(BaseModel):
     description: Optional[str] = None
     status: TaskStatus = TaskStatus.PENDING
     priority: TaskPriority = TaskPriority.MEDIUM
-    due_date: Optional[datetime] = None
+    due_date: Optional[date] = None
     due_time: Optional[str] = None
     estimated_duration_minutes: Optional[int] = None
     tags: List[str] = []
@@ -299,7 +299,7 @@ class TaskUpdate(BaseModel):
     description: Optional[str] = None
     status: Optional[TaskStatus] = None
     priority: Optional[TaskPriority] = None
-    due_date: Optional[datetime] = None
+    due_date: Optional[date] = None
     due_time: Optional[str] = None
     estimated_duration_minutes: Optional[int] = None
     actual_duration_minutes: Optional[int] = None

@@ -185,7 +185,7 @@ export interface ReviewStats {
 }
 
 // Task types
-export type TaskStatus = 'todo' | 'in_progress' | 'done' | 'cancelled'
+export type TaskStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled' | 'blocked'
 export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent'
 
 export interface Task {
@@ -195,9 +195,9 @@ export interface Task {
   status: TaskStatus
   priority: TaskPriority
   due_date: string | null
-  category: string | null
+  project: string | null
   content_id: number | null
-  is_ai_extracted: boolean
+  tags: string[]
   created_at: string
   completed_at: string | null
 }
@@ -207,14 +207,14 @@ export interface TaskCreateRequest {
   description?: string
   priority?: TaskPriority
   due_date?: string
-  category?: string
+  project?: string
 }
 
 export interface TaskStats {
   total: number
-  todo: number
+  pending: number
   in_progress: number
-  done: number
+  completed: number
   overdue: number
 }
 
