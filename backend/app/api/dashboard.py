@@ -218,7 +218,7 @@ async def get_activity_timeline(
             "id": f"flashcard-{review.id}",
             "type": "flashcard",
             "action": "reviewed",
-            "title": flashcard.front[:50] + "..." if len(flashcard.front) > 50 else flashcard.front,
+            "title": flashcard.question[:50] + "..." if len(flashcard.question) > 50 else flashcard.question,
             "timestamp": review.reviewed_at.isoformat()
         })
     

@@ -23,10 +23,15 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [statsData, activityData] = await Promise.all([
-          dashboardService.getStats(),
-          dashboardService.getActivity(10),
-        ])
+        // Fetch stats and activity separately so one failure doesn't break both
+        const statsData = await dashboardService.getStats().catch(err => {
+          console.error('Failed to fetch stats:', err)
+          return null
+        })
+        const activityData = await dashboardService.getActivity(10).catch(err => {
+          console.error('Failed to fetch activity:', err)
+          return []
+        })
         setStats(statsData)
         setActivity(activityData)
       } catch (error) {
