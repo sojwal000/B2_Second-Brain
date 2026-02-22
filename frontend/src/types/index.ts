@@ -41,6 +41,7 @@ export type ProcessingStatus = 'pending' | 'processing' | 'completed' | 'failed'
 
 export interface Content {
   id: number
+  user_id: number
   title: string
   content_type: ContentType
   source: string | null
@@ -232,7 +233,7 @@ export interface MindMapEdge {
   source: string
   target: string
   weight: number
-  type: 'subject' | 'tag' | 'semantic' | 'manual'
+  type: 'subject' | 'tag' | 'semantic' | 'manual' | 'shared_tag' | 'same_subject' | 'related'
 }
 
 export interface MindMapData {
@@ -292,4 +293,119 @@ export interface SortParams {
 export interface ApiError {
   detail: string
   status_code?: number
+}
+
+// Sharing types
+export interface SharedContentItem {
+  id: number
+  content_id: number
+  content_title: string | null
+  content_type: ContentType
+  content_summary: string | null
+  shared_by_username: string
+  shared_by_fullname: string | null
+  shared_with_username: string
+  shared_with_fullname: string | null
+  message: string | null
+  is_read: boolean
+  shared_at: string
+  read_at: string | null
+}
+
+export interface SharedByMeItem {
+  id: number
+  content_id: number
+  content_title: string | null
+  content_type: ContentType
+  shared_with_username: string
+  shared_with_fullname: string | null
+  message: string | null
+  is_read: boolean
+  shared_at: string
+}
+
+export interface UserSearchResult {
+  id: number
+  username: string
+  full_name: string | null
+}
+
+export interface SharedContentDetail {
+  id: number
+  title: string | null
+  content_type: ContentType
+  text_content: string | null
+  raw_markdown: string | null
+  summary: string | null
+  summary_bullets: string[] | null
+  tags: string[]
+  subject: string | null
+  created_at: string
+  shared_by: {
+    username: string
+    full_name: string | null
+  }
+  shared_at: string
+  message: string | null
+}
+
+// Quiz types
+export type QuestionType = 'mcq' | 'true_false' | 'fill_blank' | 'short_answer'
+
+export interface QuizGenerateRequest {
+  content_id: number
+  num_questions?: number
+  question_types?: QuestionType[]
+  difficulty?: string
+}
+
+export interface QuizQuestion {
+  id: number
+  question_type: QuestionType
+  question_text: string
+  options: string[]
+  correct_answer: string
+  explanation: string | null
+  difficulty: string | null
+  user_answer: string | null
+  is_correct: boolean | null
+  order_index: number
+}
+
+export interface QuizDetail {
+  id: number
+  title: string
+  description: string | null
+  content_id: number | null
+  difficulty: string | null
+  total_questions: number
+  score: number | null
+  completed: boolean
+  completed_at: string | null
+  created_at: string
+  questions: QuizQuestion[]
+}
+
+export interface QuizListItem {
+  id: number
+  title: string
+  content_id: number | null
+  difficulty: string | null
+  total_questions: number
+  score: number | null
+  completed: boolean
+  created_at: string
+}
+
+export interface QuizAnswer {
+  question_id: number
+  answer: string
+}
+
+export interface QuizResult {
+  quiz_id: number
+  score: number
+  total_questions: number
+  correct_count: number
+  results: QuizQuestion[]
 }

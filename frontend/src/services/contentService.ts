@@ -101,6 +101,24 @@ export const contentService = {
     const response = await api.get<string[]>('/content/tags')
     return response.data
   },
+
+  async getRecommendations(id: number, limit = 5): Promise<ContentRecommendation[]> {
+    const response = await api.get<ContentRecommendation[]>(`/content/${id}/recommendations`, {
+      params: { limit, min_score: 0.3 },
+    })
+    return response.data
+  },
+}
+
+export interface ContentRecommendation {
+  id: number
+  title: string
+  content_type: string
+  summary: string | null
+  subjects: string[]
+  tags: string[]
+  similarity_score: number
+  created_at: string
 }
 
 export default contentService

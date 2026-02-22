@@ -14,7 +14,7 @@ from app.core.database import get_db
 from app.core.security import get_current_user_id
 from app.core.config import settings
 from app.core.background_tasks import submit_task, get_task_status, TaskPriority
-from app.models.database import Content, ContentChunk, ContentType, ProcessingStatus, ContextStyle
+from app.models.database import Content, ContentChunk, ContentType, ProcessingStatus, ContextStyle, WorkspaceMember, WorkspaceContent, Workspace
 from app.schemas.schemas import (
     ContentCreateText, ContentCreateWeb, ContentUpdate, ContentResponse,
     ContentListResponse, ContentUploadResponse, ChunkResponse,
@@ -329,7 +329,8 @@ async def get_content(
     user_id: int = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db)
 ):
-    """Get content details by ID."""
+    """Get content details by ID. Also accessible if user is a member of a workspace containing this content."""
+    # Try own content first
     result = await db.execute(
         select(Content).where(
             Content.id == content_id,
@@ -337,6 +338,29 @@ async def get_content(
         )
     )
     content = result.scalar_one_or_none()
+    
+    if not content:
+        # Check if user has access via workspace membership
+        workspace_access = await db.execute(
+            select(Content)
+            .join(WorkspaceContent, WorkspaceContent.content_id == Content.id)
+            .join(Workspace, Workspace.id == WorkspaceContent.workspace_id)
+            .outerjoin(
+                WorkspaceMember,
+                and_(
+                    WorkspaceMember.workspace_id == Workspace.id,
+                    WorkspaceMember.user_id == user_id
+                )
+            )
+            .where(
+                Content.id == content_id,
+                or_(
+                    Workspace.owner_id == user_id,
+                    WorkspaceMember.user_id == user_id
+                )
+            )
+        )
+        content = workspace_access.scalar_one_or_none()
     
     if not content:
         raise HTTPException(
@@ -642,6 +666,73 @@ async def get_processing_status(
         status=content.processing_status.value,
         error=content.processing_error
     )
+
+
+# ============================================================================
+# Smart Content Recommendations
+# ============================================================================
+
+@router.get("/{content_id}/recommendations")
+async def get_recommendations(
+    content_id: int,
+    limit: int = Query(5, ge=1, le=20),
+    min_score: float = Query(0.3, ge=0.0, le=1.0),
+    user_id: int = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get AI-powered content recommendations based on semantic similarity."""
+    # Verify content exists and belongs to user
+    result = await db.execute(
+        select(Content).where(
+            Content.id == content_id,
+            Content.user_id == user_id
+        )
+    )
+    content = result.scalar_one_or_none()
+    if not content:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Content not found"
+        )
+
+    try:
+        from app.services.search_service import SearchService
+        search_service = SearchService(db, user_id)
+        similar = await search_service.find_similar(
+            content_id=content_id,
+            limit=limit,
+            min_score=min_score
+        )
+
+        # Enrich with content details
+        if similar:
+            content_ids = [s["id"] for s in similar]
+            details_result = await db.execute(
+                select(Content).where(Content.id.in_(content_ids))
+            )
+            details_map = {c.id: c for c in details_result.scalars().all()}
+
+            enriched = []
+            for s in similar:
+                c = details_map.get(s["id"])
+                if c:
+                    enriched.append({
+                        "id": c.id,
+                        "title": c.title,
+                        "content_type": c.content_type.value,
+                        "summary": c.summary[:200] if c.summary else None,
+                        "subjects": c.subjects or [],
+                        "tags": c.tags or [],
+                        "similarity_score": round(s["score"], 3),
+                        "created_at": c.created_at.isoformat(),
+                    })
+            return enriched
+
+        return []
+
+    except Exception as e:
+        logger.error(f"Recommendations failed: {e}")
+        return []
 
 
 # ============================================================================

@@ -12,6 +12,8 @@ import {
   TasksPage,
   MindMapPage,
   SettingsPage,
+  QuizPage,
+  WorkspacesPage,
 } from './pages'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -80,6 +82,8 @@ function App() {
         <Route path="flashcards" element={<FlashcardsPage />} />
         <Route path="tasks" element={<TasksPage />} />
         <Route path="mindmap" element={<MindMapPage />} />
+        <Route path="quiz" element={<QuizPage />} />
+        <Route path="workspaces" element={<WorkspacesPage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
 

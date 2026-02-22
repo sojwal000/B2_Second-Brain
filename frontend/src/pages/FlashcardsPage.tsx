@@ -210,7 +210,7 @@ export default function FlashcardsPage() {
           </Card>
         </motion.div>
 
-        {/* Rating Buttons */}
+        {/* Rating Buttons - SM-2 Spaced Repetition */}
         {showAnswer && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -224,6 +224,7 @@ export default function FlashcardsPage() {
             >
               <Close />
               <span className="text-xs mt-1">Again</span>
+              <span className="text-[10px] text-red-300 mt-0.5">10 min</span>
             </Button>
             <Button
               variant="secondary"
@@ -232,6 +233,7 @@ export default function FlashcardsPage() {
             >
               <span className="text-lg">😕</span>
               <span className="text-xs mt-1">Hard</span>
+              <span className="text-[10px] text-secondary-400 mt-0.5">10 min</span>
             </Button>
             <Button
               variant="secondary"
@@ -240,6 +242,11 @@ export default function FlashcardsPage() {
             >
               <span className="text-lg">🙂</span>
               <span className="text-xs mt-1">Good</span>
+              <span className="text-[10px] text-secondary-400 mt-0.5">
+                {currentCard && currentCard.streak === 0 ? '1d' :
+                 currentCard && currentCard.streak === 1 ? '6d' :
+                 currentCard ? `${Math.round(currentCard.stability * (currentCard.difficulty >= 1.3 ? currentCard.difficulty : 2.5))}d` : '1d'}
+              </span>
             </Button>
             <Button
               onClick={() => submitReview(4)}
@@ -247,6 +254,11 @@ export default function FlashcardsPage() {
             >
               <Check />
               <span className="text-xs mt-1">Easy</span>
+              <span className="text-[10px] text-green-300 mt-0.5">
+                {currentCard && currentCard.streak === 0 ? '1d' :
+                 currentCard && currentCard.streak === 1 ? '6d' :
+                 currentCard ? `${Math.round(currentCard.stability * (currentCard.difficulty >= 1.3 ? currentCard.difficulty : 2.5))}d` : '1d'}
+              </span>
             </Button>
           </motion.div>
         )}

@@ -18,10 +18,16 @@ import {
   MoreVert,
   Mic,
   Stop,
+  Share,
+  People,
+  PersonSearch,
+  Inbox,
+  Send,
 } from '@mui/icons-material'
 import { Card, CardContent, Button, Input, Badge, Modal, TextArea } from '../components/ui'
 import { useContentStore } from '../store/contentStore'
-import type { Content, ContentType } from '../types'
+import { sharingService } from '../services'
+import type { Content, ContentType, SharedContentItem, UserSearchResult } from '../types'
 import toast from 'react-hot-toast'
 
 const contentTypeIcons: Record<ContentType, React.ElementType> = {
@@ -80,9 +86,104 @@ export default function ContentPage() {
   const audioChunksRef = useRef<Blob[]>([])
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
+  // Sharing
+  const [activeTab, setActiveTab] = useState<'my-content' | 'shared-with-me'>('my-content')
+  const [showShareModal, setShowShareModal] = useState(false)
+  const [shareContentId, setShareContentId] = useState<number | null>(null)
+  const [shareContentTitle, setShareContentTitle] = useState('')
+  const [shareUserQuery, setShareUserQuery] = useState('')
+  const [shareMessage, setShareMessage] = useState('')
+  const [userSearchResults, setUserSearchResults] = useState<UserSearchResult[]>([])
+  const [isSearchingUsers, setIsSearchingUsers] = useState(false)
+  const [isSharing, setIsSharing] = useState(false)
+  const [sharedWithMe, setSharedWithMe] = useState<SharedContentItem[]>([])
+  const [isLoadingShared, setIsLoadingShared] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
+  const userSearchTimer = useRef<NodeJS.Timeout | null>(null)
+
   useEffect(() => {
     fetchContents()
+    loadUnreadCount()
   }, [])
+
+  // Load shared-with-me content when tab changes
+  useEffect(() => {
+    if (activeTab === 'shared-with-me') {
+      loadSharedWithMe()
+    }
+  }, [activeTab])
+
+  const loadUnreadCount = async () => {
+    try {
+      const count = await sharingService.getUnreadCount()
+      setUnreadCount(count)
+    } catch { /* ignore */ }
+  }
+
+  const loadSharedWithMe = async () => {
+    setIsLoadingShared(true)
+    try {
+      const response = await sharingService.getSharedWithMe()
+      setSharedWithMe(response.items)
+    } catch (error) {
+      console.error('Failed to load shared content:', error)
+      toast.error('Failed to load shared content')
+    } finally {
+      setIsLoadingShared(false)
+    }
+  }
+
+  const openShareModal = (contentId: number, title: string) => {
+    setShareContentId(contentId)
+    setShareContentTitle(title)
+    setShareUserQuery('')
+    setShareMessage('')
+    setUserSearchResults([])
+    setShowShareModal(true)
+  }
+
+  const handleUserSearch = (query: string) => {
+    setShareUserQuery(query)
+    if (userSearchTimer.current) clearTimeout(userSearchTimer.current)
+    if (query.trim().length < 2) {
+      setUserSearchResults([])
+      return
+    }
+    userSearchTimer.current = setTimeout(async () => {
+      setIsSearchingUsers(true)
+      try {
+        const results = await sharingService.searchUsers(query.trim())
+        setUserSearchResults(results)
+      } catch {
+        setUserSearchResults([])
+      } finally {
+        setIsSearchingUsers(false)
+      }
+    }, 300)
+  }
+
+  const handleShare = async (username: string) => {
+    if (!shareContentId) return
+    setIsSharing(true)
+    try {
+      await sharingService.shareContent(shareContentId, username, shareMessage || undefined)
+      toast.success(`Shared "${shareContentTitle}" with ${username}`)
+      setShowShareModal(false)
+    } catch (error: any) {
+      const msg = error?.response?.data?.detail || 'Failed to share'
+      toast.error(msg)
+    } finally {
+      setIsSharing(false)
+    }
+  }
+
+  const handleMarkAsRead = async (shareId: number) => {
+    try {
+      await sharingService.markAsRead(shareId)
+      setSharedWithMe(prev => prev.map(s => s.id === shareId ? { ...s, is_read: true } : s))
+      setUnreadCount(prev => Math.max(0, prev - 1))
+    } catch { /* ignore */ }
+  }
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return
@@ -257,7 +358,38 @@ export default function ContentPage() {
         </div>
       </div>
 
+      {/* Tab Selector */}
+      <div className="flex items-center gap-1 bg-secondary-800 rounded-lg p-1 w-fit">
+        <button
+          onClick={() => setActiveTab('my-content')}
+          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            activeTab === 'my-content'
+              ? 'bg-primary-600 text-white'
+              : 'text-secondary-400 hover:text-white hover:bg-secondary-700'
+          }`}
+        >
+          My Content
+        </button>
+        <button
+          onClick={() => setActiveTab('shared-with-me')}
+          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
+            activeTab === 'shared-with-me'
+              ? 'bg-primary-600 text-white'
+              : 'text-secondary-400 hover:text-white hover:bg-secondary-700'
+          }`}
+        >
+          <Inbox fontSize="small" />
+          Shared With Me
+          {unreadCount > 0 && (
+            <span className="bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
+              {unreadCount}
+            </span>
+          )}
+        </button>
+      </div>
+
       {/* Search and Filters */}
+      {activeTab === 'my-content' && (
       <div className="flex flex-col md:flex-row gap-4">
         <form onSubmit={handleSearch} className="flex-1">
           <div className="relative">
@@ -291,8 +423,11 @@ export default function ContentPage() {
           </Button>
         </div>
       </div>
+      )}
 
-      {/* Content Grid */}
+      {/* Content Grid or Shared With Me */}
+      {activeTab === 'my-content' ? (
+      <>
       {isLoading ? (
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
@@ -308,6 +443,7 @@ export default function ContentPage() {
                 onClick={() => navigate(`/content/${content.id}`)}
                 onFavorite={() => toggleFavorite(content.id)}
                 onPin={() => togglePin(content.id)}
+                onShare={() => openShareModal(content.id, content.title)}
               />
             ))}
           </AnimatePresence>
@@ -340,6 +476,41 @@ export default function ContentPage() {
             </Button>
           ))}
         </div>
+      )}
+      </>
+      ) : (
+        /* Shared With Me Tab */
+        <>
+          {isLoadingShared ? (
+            <div className="flex items-center justify-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+            </div>
+          ) : sharedWithMe.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <AnimatePresence>
+                {sharedWithMe.map((item, index) => (
+                  <SharedContentCard
+                    key={item.id}
+                    item={item}
+                    index={index}
+                    onClick={() => {
+                      if (!item.is_read) handleMarkAsRead(item.id)
+                      navigate(`/content/${item.content_id}`)
+                    }}
+                  />
+                ))}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <Card className="p-12 text-center">
+              <Inbox className="text-secondary-500 text-5xl mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-white mb-2">No shared content</h3>
+              <p className="text-secondary-400">
+                When someone shares content with you, it will appear here
+              </p>
+            </Card>
+          )}
+        </>
       )}
 
       {/* Upload Modal */}
@@ -516,6 +687,78 @@ export default function ContentPage() {
           </div>
         </div>
       </Modal>
+
+      {/* Share Modal */}
+      <Modal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        title={`Share "${shareContentTitle}"`}
+        size="md"
+      >
+        <div className="space-y-4">
+          {/* Optional message */}
+          <TextArea
+            label="Message (optional)"
+            placeholder="Add a note for the recipient..."
+            value={shareMessage}
+            onChange={(e) => setShareMessage(e.target.value)}
+            rows={2}
+          />
+
+          {/* User search */}
+          <div>
+            <label className="block text-sm font-medium text-secondary-300 mb-1">
+              Search users to share with
+            </label>
+            <div className="relative">
+              <PersonSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-500" />
+              <Input
+                placeholder="Type a username or name..."
+                value={shareUserQuery}
+                onChange={(e) => handleUserSearch(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </div>
+
+          {/* User results */}
+          {isSearchingUsers && (
+            <div className="text-center text-secondary-400 text-sm py-2">Searching...</div>
+          )}
+          {userSearchResults.length > 0 && (
+            <div className="max-h-48 overflow-y-auto space-y-1">
+              {userSearchResults.map((user) => (
+                <button
+                  key={user.id}
+                  onClick={() => handleShare(user.username)}
+                  disabled={isSharing}
+                  className="w-full flex items-center gap-3 p-3 rounded-lg bg-secondary-800 hover:bg-secondary-700 transition-colors text-left"
+                >
+                  <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center text-white text-sm font-bold">
+                    {(user.full_name || user.username).charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white text-sm font-medium truncate">{user.username}</p>
+                    {user.full_name && (
+                      <p className="text-secondary-400 text-xs truncate">{user.full_name}</p>
+                    )}
+                  </div>
+                  <Send fontSize="small" className="text-primary-400" />
+                </button>
+              ))}
+            </div>
+          )}
+          {shareUserQuery.length >= 2 && !isSearchingUsers && userSearchResults.length === 0 && (
+            <p className="text-secondary-500 text-sm text-center py-2">No users found</p>
+          )}
+
+          <div className="flex justify-end">
+            <Button variant="ghost" onClick={() => setShowShareModal(false)}>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }
@@ -526,9 +769,10 @@ interface ContentCardProps {
   onClick: () => void
   onFavorite: () => void
   onPin: () => void
+  onShare: () => void
 }
 
-function ContentCard({ content, index, onClick, onFavorite, onPin }: ContentCardProps) {
+function ContentCard({ content, index, onClick, onFavorite, onPin, onShare }: ContentCardProps) {
   const Icon = contentTypeIcons[content.content_type] || Description
   const colorClass = contentTypeColors[content.content_type] || 'bg-secondary-500/10 text-secondary-400'
 
@@ -568,6 +812,15 @@ function ContentCard({ content, index, onClick, onFavorite, onPin }: ContentCard
               >
                 <PushPin fontSize="small" />
               </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onShare()
+                }}
+                className="p-1 rounded hover:bg-secondary-700 transition-colors text-secondary-500 hover:text-primary-400"
+              >
+                <Share fontSize="small" />
+              </button>
               <button className="p-1 rounded hover:bg-secondary-700 transition-colors text-secondary-500">
                 <MoreVert fontSize="small" />
               </button>
@@ -601,6 +854,73 @@ function ContentCard({ content, index, onClick, onFavorite, onPin }: ContentCard
             </span>
             <span className="text-xs text-secondary-500">
               {new Date(content.created_at).toLocaleDateString()}
+            </span>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  )
+}
+
+// Shared Content Card
+interface SharedContentCardProps {
+  item: SharedContentItem
+  index: number
+  onClick: () => void
+}
+
+function SharedContentCard({ item, index, onClick }: SharedContentCardProps) {
+  const Icon = contentTypeIcons[item.content_type] || Description
+  const colorClass = contentTypeColors[item.content_type] || 'bg-secondary-500/10 text-secondary-400'
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ delay: index * 0.05 }}
+    >
+      <Card hoverable onClick={onClick} className={`h-full ${!item.is_read ? 'ring-1 ring-primary-500/50' : ''}`}>
+        <CardContent>
+          <div className="flex items-start justify-between mb-3">
+            <div className={`p-2 rounded-lg ${colorClass}`}>
+              <Icon fontSize="small" />
+            </div>
+            <div className="flex items-center gap-2">
+              {!item.is_read && (
+                <span className="w-2.5 h-2.5 rounded-full bg-primary-500" title="Unread" />
+              )}
+              <People fontSize="small" className="text-secondary-500" />
+            </div>
+          </div>
+
+          <h3 className="font-medium text-white mb-2 line-clamp-2">
+            {item.content_title || 'Untitled'}
+          </h3>
+
+          {item.content_summary && (
+            <p className="text-secondary-400 text-sm mb-2 line-clamp-2">
+              {item.content_summary}
+            </p>
+          )}
+
+          {item.message && (
+            <div className="bg-secondary-800 rounded-lg px-3 py-2 mb-3">
+              <p className="text-secondary-300 text-xs italic line-clamp-2">"{item.message}"</p>
+            </div>
+          )}
+
+          <div className="flex items-center justify-between mt-4 pt-3 border-t border-secondary-700">
+            <div className="flex items-center gap-1">
+              <div className="w-5 h-5 rounded-full bg-primary-600 flex items-center justify-center text-[10px] text-white font-bold">
+                {(item.shared_by_fullname || item.shared_by_username).charAt(0).toUpperCase()}
+              </div>
+              <span className="text-xs text-secondary-400 truncate max-w-[100px]">
+                {item.shared_by_fullname || item.shared_by_username}
+              </span>
+            </div>
+            <span className="text-xs text-secondary-500">
+              {new Date(item.shared_at).toLocaleDateString()}
             </span>
           </div>
         </CardContent>

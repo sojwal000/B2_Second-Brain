@@ -440,31 +440,59 @@ async def review_flashcard(
     stability_before = card.stability
     difficulty_before = card.difficulty
     
-    # Simple spaced repetition algorithm
-    # Base interval multipliers based on rating
-    if rating == 1:  # Again
-        new_interval = 0.0  # Review again soon (10 minutes)
+    # ================================================================
+    # SM-2 Spaced Repetition Algorithm
+    # Maps our 1-4 rating to SM-2 quality (0-5):
+    #   1 (Again) → q=0, 2 (Hard) → q=2, 3 (Good) → q=4, 4 (Easy) → q=5
+    # ================================================================
+    quality_map = {1: 0, 2: 2, 3: 4, 4: 5}
+    q = quality_map[rating]
+    
+    # EF (Easiness Factor) stored in card.difficulty as EF value (default 2.5)
+    # On first review, initialize EF if it's 0
+    ef = card.difficulty if card.difficulty >= 1.3 else 2.5
+    
+    # Current interval (stored in card.stability as days)
+    current_interval = card.stability if card.stability > 0 else 0
+    
+    # Current repetition count for SM-2 (use streak as repetition counter)
+    repetitions = card.streak
+    
+    if q < 3:
+        # Failed review: reset repetitions, short interval
+        repetitions = 0
+        new_interval = 0.0  # Review again in 10 minutes
         card.lapses += 1
-        card.streak = 0
-        card.stability = max(0.1, card.stability * 0.5)  # Reduce stability
-        card.difficulty = min(1.0, card.difficulty + 0.1)  # Increase difficulty
-        mastery = MasteryLevel.NEW
-    elif rating == 2:  # Hard
-        new_interval = max(1.0, card.stability * 1.2)
-        card.streak = 0
-        card.difficulty = min(1.0, card.difficulty + 0.05)
-        mastery = MasteryLevel.LEARNING
-    elif rating == 3:  # Good
-        new_interval = max(1.0, card.stability * 2.5)
-        card.streak += 1
-        card.stability = new_interval
-        mastery = MasteryLevel.YOUNG if new_interval < 21 else MasteryLevel.MATURE
-    else:  # Easy (4)
-        new_interval = max(1.0, card.stability * 3.5)
-        card.streak += 1
-        card.stability = new_interval
-        card.difficulty = max(0.0, card.difficulty - 0.05)
-        mastery = MasteryLevel.YOUNG if new_interval < 21 else MasteryLevel.MATURE
+        # Reduce EF slightly on failure but keep minimum 1.3
+        ef = max(1.3, ef - 0.2)
+        mastery = MasteryLevel.NEW if card.review_count == 0 else MasteryLevel.LEARNING
+    else:
+        # Successful review
+        repetitions += 1
+        if repetitions == 1:
+            new_interval = 1.0  # 1 day
+        elif repetitions == 2:
+            new_interval = 6.0  # 6 days
+        else:
+            new_interval = round(current_interval * ef, 1)
+        
+        # Update EF using SM-2 formula:
+        # EF' = EF + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02))
+        ef = ef + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02))
+        ef = max(1.3, ef)  # EF must not go below 1.3
+        
+        # Determine mastery level
+        if new_interval < 7:
+            mastery = MasteryLevel.LEARNING
+        elif new_interval < 21:
+            mastery = MasteryLevel.YOUNG
+        else:
+            mastery = MasteryLevel.MATURE
+    
+    # Save SM-2 state back to card fields
+    card.difficulty = round(ef, 4)  # Store EF in difficulty
+    card.stability = new_interval     # Store interval in stability
+    card.streak = repetitions         # Store repetitions in streak
     
     # Calculate next review date
     if new_interval == 0:
@@ -506,7 +534,7 @@ async def review_flashcard(
         new_interval=new_interval,
         next_review=next_review_date,
         mastery_level=mastery.value,
-        ease_factor=card.stability  # Use stability as ease factor for compatibility
+        ease_factor=card.difficulty  # SM-2 Easiness Factor
     )
 
 

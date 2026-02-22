@@ -14,10 +14,18 @@ import {
   Task,
   VolumeUp,
   Stop,
+  Share,
+  PersonSearch,
+  Send,
+  Recommend,
+  OpenInNew,
 } from '@mui/icons-material'
 import { Button, Card, CardContent, Badge, Modal, Input } from '../components/ui'
 import { useContentStore } from '../store/contentStore'
-import { contentService, flashcardService, taskService } from '../services'
+import { useAuthStore } from '../store/authStore'
+import { contentService, flashcardService, taskService, sharingService } from '../services'
+import type { ContentRecommendation } from '../services/contentService'
+import type { UserSearchResult } from '../types'
 import toast from 'react-hot-toast'
 
 export default function ContentDetailPage() {
@@ -32,6 +40,8 @@ export default function ContentDetailPage() {
     toggleArchive,
     deleteContent,
   } = useContentStore()
+  const currentUser = useAuthStore((s) => s.user)
+  const isOwner = !!(content && currentUser && content.user_id === currentUser.id)
 
   const [isProcessing, setIsProcessing] = useState(false)
   const [showFlashcardModal, setShowFlashcardModal] = useState(false)
@@ -45,9 +55,61 @@ export default function ContentDetailPage() {
   const [isSpeaking, setIsSpeaking] = useState(false)
   const speechSynthRef = useRef<SpeechSynthesisUtterance | null>(null)
 
+  // Sharing state
+  const [showShareModal, setShowShareModal] = useState(false)
+  const [shareUserQuery, setShareUserQuery] = useState('')
+  const [shareMessage, setShareMessage] = useState('')
+  const [userSearchResults, setUserSearchResults] = useState<UserSearchResult[]>([])
+  const [isSearchingUsers, setIsSearchingUsers] = useState(false)
+  const [isSharing, setIsSharing] = useState(false)
+  const userSearchTimer = useRef<NodeJS.Timeout | null>(null)
+
+  // Recommendations state
+  const [recommendations, setRecommendations] = useState<ContentRecommendation[]>([])
+  const [isLoadingRecs, setIsLoadingRecs] = useState(false)
+
+  const handleUserSearch = (query: string) => {
+    setShareUserQuery(query)
+    if (userSearchTimer.current) clearTimeout(userSearchTimer.current)
+    if (query.trim().length < 2) {
+      setUserSearchResults([])
+      return
+    }
+    userSearchTimer.current = setTimeout(async () => {
+      setIsSearchingUsers(true)
+      try {
+        const results = await sharingService.searchUsers(query.trim())
+        setUserSearchResults(results)
+      } catch {
+        setUserSearchResults([])
+      } finally {
+        setIsSearchingUsers(false)
+      }
+    }, 300)
+  }
+
+  const handleShare = async (username: string) => {
+    if (!content) return
+    setIsSharing(true)
+    try {
+      await sharingService.shareContent(content.id, username, shareMessage || undefined)
+      toast.success(`Shared with ${username}`)
+      setShowShareModal(false)
+      setShareUserQuery('')
+      setShareMessage('')
+      setUserSearchResults([])
+    } catch (error: any) {
+      const msg = error?.response?.data?.detail || 'Failed to share'
+      toast.error(msg)
+    } finally {
+      setIsSharing(false)
+    }
+  }
+
   useEffect(() => {
     if (id) {
       fetchContent(parseInt(id))
+      loadRecommendations(parseInt(id))
     }
   }, [id, fetchContent])
 
@@ -57,6 +119,18 @@ export default function ContentDetailPage() {
       setEditTags(content.tags?.join(', ') || '')
     }
   }, [content])
+
+  const loadRecommendations = async (contentId: number) => {
+    setIsLoadingRecs(true)
+    try {
+      const recs = await contentService.getRecommendations(contentId, 5)
+      setRecommendations(recs)
+    } catch {
+      // Recommendations are optional, silently fail
+    } finally {
+      setIsLoadingRecs(false)
+    }
+  }
 
   const handleReprocess = async () => {
     if (!content) return
@@ -261,30 +335,34 @@ export default function ContentDetailPage() {
 
       {/* Actions */}
       <div className="flex flex-wrap items-center gap-2">
-        <Button
-          variant={content.is_favorite ? 'primary' : 'secondary'}
-          size="sm"
-          onClick={() => toggleFavorite(content.id)}
-        >
-          <Star fontSize="small" className="mr-1" />
-          {content.is_favorite ? 'Favorited' : 'Favorite'}
-        </Button>
-        <Button
-          variant={content.is_pinned ? 'primary' : 'secondary'}
-          size="sm"
-          onClick={() => togglePin(content.id)}
-        >
-          <PushPin fontSize="small" className="mr-1" />
-          {content.is_pinned ? 'Pinned' : 'Pin'}
-        </Button>
-        <Button
-          variant={content.is_archived ? 'primary' : 'secondary'}
-          size="sm"
-          onClick={() => toggleArchive(content.id)}
-        >
-          <Archive fontSize="small" className="mr-1" />
-          {content.is_archived ? 'Archived' : 'Archive'}
-        </Button>
+        {isOwner && (
+          <>
+            <Button
+              variant={content.is_favorite ? 'primary' : 'secondary'}
+              size="sm"
+              onClick={() => toggleFavorite(content.id)}
+            >
+              <Star fontSize="small" className="mr-1" />
+              {content.is_favorite ? 'Favorited' : 'Favorite'}
+            </Button>
+            <Button
+              variant={content.is_pinned ? 'primary' : 'secondary'}
+              size="sm"
+              onClick={() => togglePin(content.id)}
+            >
+              <PushPin fontSize="small" className="mr-1" />
+              {content.is_pinned ? 'Pinned' : 'Pin'}
+            </Button>
+            <Button
+              variant={content.is_archived ? 'primary' : 'secondary'}
+              size="sm"
+              onClick={() => toggleArchive(content.id)}
+            >
+              <Archive fontSize="small" className="mr-1" />
+              {content.is_archived ? 'Archived' : 'Archive'}
+            </Button>
+          </>
+        )}
         <Button
           variant={isSpeaking ? 'primary' : 'secondary'}
           size="sm"
@@ -302,26 +380,48 @@ export default function ContentDetailPage() {
             </>
           )}
         </Button>
+        {isOwner && (
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => {
+              setShareUserQuery('')
+              setShareMessage('')
+              setUserSearchResults([])
+              setShowShareModal(true)
+            }}
+          >
+            <Share fontSize="small" className="mr-1" />
+            Share
+          </Button>
+        )}
         <div className="flex-1" />
-        <Button variant="ghost" size="sm" onClick={() => setShowFlashcardModal(true)} disabled={isProcessing}>
-          <Style fontSize="small" className="mr-1" />
-          Generate Flashcards
-        </Button>
-        <Button variant="ghost" size="sm" onClick={handleExtractTasks} disabled={isProcessing}>
-          <Task fontSize="small" className="mr-1" />
-          Extract Tasks
-        </Button>
-        <Button variant="ghost" size="sm" onClick={() => setShowEditModal(true)} disabled={isProcessing}>
-          <Edit fontSize="small" className="mr-1" />
-          Edit
-        </Button>
-        <Button variant="ghost" size="sm" onClick={handleReprocess} disabled={isProcessing}>
-          <Refresh fontSize="small" className={isProcessing ? 'animate-spin mr-1' : 'mr-1'} />
-          Reprocess
-        </Button>
-        <Button variant="danger" size="sm" onClick={handleDelete}>
-          <Delete fontSize="small" />
-        </Button>
+        {isOwner && (
+          <>
+            <Button variant="ghost" size="sm" onClick={() => setShowFlashcardModal(true)} disabled={isProcessing}>
+              <Style fontSize="small" className="mr-1" />
+              Generate Flashcards
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleExtractTasks} disabled={isProcessing}>
+              <Task fontSize="small" className="mr-1" />
+              Extract Tasks
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setShowEditModal(true)} disabled={isProcessing}>
+              <Edit fontSize="small" className="mr-1" />
+              Edit
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleReprocess} disabled={isProcessing}>
+              <Refresh fontSize="small" className={isProcessing ? 'animate-spin mr-1' : 'mr-1'} />
+              Reprocess
+            </Button>
+            <Button variant="danger" size="sm" onClick={handleDelete}>
+              <Delete fontSize="small" />
+            </Button>
+          </>
+        )}
+        {!isOwner && (
+          <span className="text-secondary-500 text-sm italic">Viewing shared content (read-only)</span>
+        )}
       </div>
 
       {/* Tags and Subjects */}
@@ -397,6 +497,49 @@ export default function ContentDetailPage() {
         </CardContent>
       </Card>
 
+      {/* Related Content (AI Recommendations) */}
+      {(isLoadingRecs || recommendations.length > 0) && (
+        <Card>
+          <CardContent>
+            <div className="flex items-center gap-2 mb-4">
+              <Recommend fontSize="small" className="text-primary-400" />
+              <h3 className="text-lg font-semibold text-white">Related Content</h3>
+            </div>
+            {isLoadingRecs ? (
+              <div className="flex items-center justify-center py-6">
+                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary-500"></div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {recommendations.map((rec) => (
+                  <button
+                    key={rec.id}
+                    onClick={() => navigate(`/content/${rec.id}`)}
+                    className="flex items-start gap-3 p-3 rounded-lg bg-secondary-800 hover:bg-secondary-700 transition-colors text-left group"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm font-medium truncate group-hover:text-primary-300">
+                        {rec.title}
+                      </p>
+                      {rec.summary && (
+                        <p className="text-secondary-400 text-xs mt-1 line-clamp-2">{rec.summary}</p>
+                      )}
+                      <div className="flex items-center gap-2 mt-2">
+                        <Badge variant="default" size="sm">{rec.content_type}</Badge>
+                        <span className="text-xs text-secondary-500">
+                          {Math.round(rec.similarity_score * 100)}% match
+                        </span>
+                      </div>
+                    </div>
+                    <OpenInNew fontSize="small" className="text-secondary-500 group-hover:text-primary-400 mt-1 flex-shrink-0" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Generate Flashcards Modal */}
       <Modal
         isOpen={showFlashcardModal}
@@ -454,6 +597,75 @@ export default function ContentDetailPage() {
             </Button>
             <Button onClick={handleEdit} disabled={isProcessing}>
               {isProcessing ? 'Saving...' : 'Save'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Share Modal */}
+      <Modal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        title={`Share "${content.title}"`}
+        size="md"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-secondary-300 mb-1">
+              Message (optional)
+            </label>
+            <Input
+              placeholder="Add a note..."
+              value={shareMessage}
+              onChange={(e) => setShareMessage(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-secondary-300 mb-1">
+              Search users
+            </label>
+            <div className="relative">
+              <PersonSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-500" />
+              <Input
+                placeholder="Type a username or name..."
+                value={shareUserQuery}
+                onChange={(e) => handleUserSearch(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </div>
+          {isSearchingUsers && (
+            <div className="text-center text-secondary-400 text-sm py-2">Searching...</div>
+          )}
+          {userSearchResults.length > 0 && (
+            <div className="max-h-48 overflow-y-auto space-y-1">
+              {userSearchResults.map((user) => (
+                <button
+                  key={user.id}
+                  onClick={() => handleShare(user.username)}
+                  disabled={isSharing}
+                  className="w-full flex items-center gap-3 p-3 rounded-lg bg-secondary-800 hover:bg-secondary-700 transition-colors text-left"
+                >
+                  <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center text-white text-sm font-bold">
+                    {(user.full_name || user.username).charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white text-sm font-medium truncate">{user.username}</p>
+                    {user.full_name && (
+                      <p className="text-secondary-400 text-xs truncate">{user.full_name}</p>
+                    )}
+                  </div>
+                  <Send fontSize="small" className="text-primary-400" />
+                </button>
+              ))}
+            </div>
+          )}
+          {shareUserQuery.length >= 2 && !isSearchingUsers && userSearchResults.length === 0 && (
+            <p className="text-secondary-500 text-sm text-center py-2">No users found</p>
+          )}
+          <div className="flex justify-end">
+            <Button variant="ghost" onClick={() => setShowShareModal(false)}>
+              Cancel
             </Button>
           </div>
         </div>

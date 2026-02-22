@@ -14,7 +14,7 @@ import time
 from app.core.config import settings
 from app.core.database import init_db, close_db, MongoDB
 from app.core.background_tasks import task_manager
-from app.api import auth, content, assistant, flashcards, tasks, dashboard, mindmap
+from app.api import auth, content, assistant, flashcards, tasks, dashboard, mindmap, sharing, quiz, workspaces
 
 # Configure logging
 logging.basicConfig(
@@ -173,6 +173,9 @@ app.include_router(flashcards.router, prefix="/api/flashcards", tags=["Flashcard
 app.include_router(tasks.router, prefix="/api/tasks", tags=["Tasks"])
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
 app.include_router(mindmap.router, prefix="/api/mindmap", tags=["Mind Map / Knowledge Graph"])
+app.include_router(sharing.router, prefix="/api/sharing", tags=["Content Sharing"])
+app.include_router(quiz.router, prefix="/api/quiz", tags=["Quiz"])
+app.include_router(workspaces.router, prefix="/api/workspaces", tags=["Workspaces"])
 
 
 # ============================================================================

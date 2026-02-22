@@ -7,6 +7,8 @@ import {
   Style,
   Task,
   AccountTree,
+  Quiz,
+  Workspaces,
   Settings,
   Logout,
   Menu,
@@ -23,6 +25,8 @@ const navItems = [
   { path: '/flashcards', label: 'Flashcards', icon: Style },
   { path: '/tasks', label: 'Tasks', icon: Task },
   { path: '/mindmap', label: 'Mind Map', icon: AccountTree },
+  { path: '/quiz', label: 'Quizzes', icon: Quiz },
+  { path: '/workspaces', label: 'Workspaces', icon: Workspaces },
 ]
 
 export default function Layout() {

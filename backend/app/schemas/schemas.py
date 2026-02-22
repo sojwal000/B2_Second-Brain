@@ -59,6 +59,13 @@ class ContextStyle(str, Enum):
     ACADEMIC = "academic"
 
 
+class QuestionType(str, Enum):
+    MCQ = "mcq"
+    TRUE_FALSE = "true_false"
+    FILL_BLANK = "fill_blank"
+    SHORT_ANSWER = "short_answer"
+
+
 class LinkType(str, Enum):
     EXPLAINS = "explains"
     EXAMPLE_OF = "example_of"
@@ -864,6 +871,177 @@ class TaskStatusResponse(BaseModel):
     error: Optional[str] = None
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
+
+
+# ============================================================================
+# Content Sharing Schemas
+# ============================================================================
+
+class ShareContentRequest(BaseModel):
+    """Request to share content with another user."""
+    content_id: int
+    shared_with_username: str = Field(..., min_length=1, description="Username of the recipient")
+    message: Optional[str] = Field(None, max_length=500, description="Optional message")
+
+
+class SharedContentResponse(BaseModel):
+    """Response for a shared content item."""
+    id: int
+    content_id: int
+    content_title: Optional[str]
+    content_type: ContentType
+    content_summary: Optional[str]
+    shared_by_username: str
+    shared_by_fullname: Optional[str]
+    shared_with_username: str
+    shared_with_fullname: Optional[str]
+    message: Optional[str]
+    is_read: bool
+    shared_at: datetime
+    read_at: Optional[datetime]
+
+
+class SharedByMeResponse(BaseModel):
+    """Content I shared with others."""
+    id: int
+    content_id: int
+    content_title: Optional[str]
+    content_type: ContentType
+    shared_with_username: str
+    shared_with_fullname: Optional[str]
+    message: Optional[str]
+    is_read: bool
+    shared_at: datetime
+
+
+class UserSearchResult(BaseModel):
+    """User search result for sharing."""
+    id: int
+    username: str
+    full_name: Optional[str]
+
+
+# ============================================================================
+# Quiz Schemas
+# ============================================================================
+
+class QuizGenerateRequest(BaseModel):
+    content_id: int
+    num_questions: int = Field(default=10, ge=1, le=30)
+    question_types: List[QuestionType] = [QuestionType.MCQ, QuestionType.TRUE_FALSE, QuestionType.FILL_BLANK]
+    difficulty: Optional[str] = None  # easy, medium, hard
+
+
+class QuizQuestionResponse(BaseModel):
+    id: int
+    question_type: QuestionType
+    question_text: str
+    options: List[str] = []
+    correct_answer: str
+    explanation: Optional[str] = None
+    difficulty: Optional[str] = None
+    user_answer: Optional[str] = None
+    is_correct: Optional[bool] = None
+    order_index: int = 0
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class QuizResponse(BaseModel):
+    id: int
+    title: str
+    description: Optional[str] = None
+    content_id: Optional[int] = None
+    difficulty: Optional[str] = None
+    total_questions: int
+    score: Optional[float] = None
+    completed: bool
+    completed_at: Optional[datetime] = None
+    created_at: datetime
+    questions: List[QuizQuestionResponse] = []
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class QuizListResponse(BaseModel):
+    id: int
+    title: str
+    content_id: Optional[int] = None
+    difficulty: Optional[str] = None
+    total_questions: int
+    score: Optional[float] = None
+    completed: bool
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class QuizAnswerRequest(BaseModel):
+    question_id: int
+    answer: str
+
+
+class QuizSubmitRequest(BaseModel):
+    answers: List[QuizAnswerRequest]
+
+
+class QuizResultResponse(BaseModel):
+    quiz_id: int
+    score: float
+    total_questions: int
+    correct_count: int
+    results: List[QuizQuestionResponse]
+
+
+# ============================================================================
+# Collaborative Workspace Schemas
+# ============================================================================
+
+class WorkspaceCreate(BaseModel):
+    name: str = Field(..., min_length=1, max_length=200)
+    description: Optional[str] = None
+
+class WorkspaceUpdate(BaseModel):
+    name: Optional[str] = Field(None, min_length=1, max_length=200)
+    description: Optional[str] = None
+
+class WorkspaceMemberAdd(BaseModel):
+    username: str
+    role: str = "viewer"  # owner, admin, editor, viewer
+
+class WorkspaceMemberResponse(BaseModel):
+    id: int
+    user_id: int
+    username: str
+    full_name: Optional[str] = None
+    role: str
+    joined_at: datetime
+
+class WorkspaceContentAdd(BaseModel):
+    content_id: int
+
+class WorkspaceContentResponse(BaseModel):
+    id: int
+    content_id: int
+    content_title: Optional[str] = None
+    content_type: Optional[str] = None
+    added_by_username: str
+    added_at: datetime
+
+class WorkspaceResponse(BaseModel):
+    id: int
+    name: str
+    description: Optional[str] = None
+    owner_id: int
+    owner_username: Optional[str] = None
+    member_count: int = 0
+    content_count: int = 0
+    created_at: datetime
+    updated_at: datetime
+
+class WorkspaceDetailResponse(WorkspaceResponse):
+    members: List[WorkspaceMemberResponse] = []
+    contents: List[WorkspaceContentResponse] = []
 
 
 # Enable forward references
