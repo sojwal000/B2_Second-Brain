@@ -6,20 +6,24 @@ import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import {
   Send,
   History,
-  Add,
   Delete,
   AutoAwesome,
   Article,
+  Chat,
 } from '@mui/icons-material'
-import { Button, Card, CardContent, Input, Badge } from '../components/ui'
+import { Button, Card, CardContent, Input, Badge, Modal } from '../components/ui'
 import { assistantService } from '../services'
-import type { ChatMessage, ContentSource } from '../types'
+import type { ChatMessage, ChatSession } from '../types'
 
 export default function AssistantPage() {
   const [query, setQuery] = useState('')
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([])
+  const [showHistory, setShowHistory] = useState(false)
+  const [chatSessions, setChatSessions] = useState<ChatSession[]>([])
+  const [loadingHistory, setLoadingHistory] = useState(false)
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -51,16 +55,23 @@ export default function AssistantPage() {
     }
 
     setMessages((prev) => [...prev, userMessage])
+    const currentQuery = query.trim()
     setQuery('')
     setIsLoading(true)
 
     try {
-      const response = await assistantService.query({ query: query.trim() })
+      // Use chat endpoint which saves to session
+      const response = await assistantService.chat(currentQuery, currentSessionId || undefined)
+      
+      // Save session ID for follow-up messages
+      if (!currentSessionId && response.session_id) {
+        setCurrentSessionId(response.session_id)
+      }
 
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: response.answer,
+        content: response.message.content,
         sources: response.sources,
         timestamp: new Date().toISOString(),
       }
@@ -68,8 +79,8 @@ export default function AssistantPage() {
       setMessages((prev) => [...prev, assistantMessage])
 
       // Update suggestions with follow-up questions
-      if (response.follow_up_questions?.length) {
-        setSuggestedQuestions(response.follow_up_questions)
+      if (response.suggested_questions?.length) {
+        setSuggestedQuestions(response.suggested_questions)
       }
     } catch (error) {
       console.error('Query failed:', error)
@@ -91,7 +102,33 @@ export default function AssistantPage() {
 
   const clearChat = () => {
     setMessages([])
+    setCurrentSessionId(null)
     loadSuggestions()
+  }
+
+  const loadHistory = async () => {
+    setShowHistory(true)
+    setLoadingHistory(true)
+    try {
+      const sessions = await assistantService.listChatSessions()
+      setChatSessions(sessions)
+    } catch (error) {
+      console.error('Failed to load chat history:', error)
+      setChatSessions([])
+    } finally {
+      setLoadingHistory(false)
+    }
+  }
+
+  const loadSession = async (session: ChatSession) => {
+    try {
+      const fullSession = await assistantService.getChatSession(session.id)
+      setMessages(fullSession.messages || [])
+      setCurrentSessionId(session.id)
+      setShowHistory(false)
+    } catch (error) {
+      console.error('Failed to load session:', error)
+    }
   }
 
   return (
@@ -103,7 +140,7 @@ export default function AssistantPage() {
           <p className="text-secondary-400">Ask questions about your knowledge base</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" onClick={loadHistory}>
             <History fontSize="small" className="mr-1" />
             History
           </Button>
@@ -113,6 +150,47 @@ export default function AssistantPage() {
           </Button>
         </div>
       </div>
+
+      {/* History Modal */}
+      <Modal
+        isOpen={showHistory}
+        onClose={() => setShowHistory(false)}
+        title="Chat History"
+      >
+        <div className="space-y-3 max-h-96 overflow-y-auto">
+          {loadingHistory ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-500"></div>
+            </div>
+          ) : chatSessions.length === 0 ? (
+            <div className="text-center py-8 text-secondary-400">
+              <Chat className="text-4xl mb-2 opacity-50" />
+              <p>No chat history yet</p>
+              <p className="text-sm">Your conversations will appear here</p>
+            </div>
+          ) : (
+            chatSessions.map((session) => (
+              <button
+                key={session.id}
+                onClick={() => loadSession(session)}
+                className="w-full text-left p-3 bg-secondary-800 hover:bg-secondary-700 rounded-lg transition-colors"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-white font-medium truncate">
+                    {session.title || 'Untitled Chat'}
+                  </span>
+                  <span className="text-secondary-500 text-xs">
+                    {new Date(session.updated_at).toLocaleDateString()}
+                  </span>
+                </div>
+                <p className="text-secondary-400 text-sm mt-1 truncate">
+                  {session.messages?.length || 0} messages
+                </p>
+              </button>
+            ))
+          )}
+        </div>
+      </Modal>
 
       {/* Chat Area */}
       <Card className="flex-1 flex flex-col overflow-hidden">

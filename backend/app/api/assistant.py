@@ -211,14 +211,17 @@ async def chat(
         # Get or create session
         session_id = chat_request.session_id
         if not session_id:
+            # Generate a unique session_id
+            new_session_id = str(uuid.uuid4())
             session = ChatSession(
                 user_id=user_id,
+                session_id=new_session_id,
                 title=chat_request.message[:50] + "..." if len(chat_request.message) > 50 else chat_request.message
             )
             db.add(session)
             await db.commit()
             await db.refresh(session)
-            session_id = str(session.id)
+            session_id = new_session_id
         
         # Process chat message
         result = await chat_service.chat(
@@ -228,15 +231,27 @@ async def chat(
             context_style=chat_request.context_style
         )
         
+        # Convert SourceReference to QuerySource format
+        query_sources = []
+        for src in (result.sources or []):
+            query_sources.append({
+                "content_id": src.content_id,
+                "title": src.title,
+                "snippet": src.text_preview[:500] if src.text_preview else "",
+                "relevance_score": src.relevance_score or 0.0,
+                "supporting_quote": None,
+                "created_at": datetime.utcnow()
+            })
+        
         return ChatResponse(
             session_id=session_id,
             message=ChatMessage(
                 role="assistant",
                 content=result.response,
                 timestamp=datetime.utcnow().isoformat(),
-                sources=result.sources
+                sources=None
             ),
-            sources=result.sources,
+            sources=query_sources,
             suggested_questions=result.suggested_questions
         )
         

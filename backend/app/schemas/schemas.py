@@ -631,13 +631,15 @@ class ChatRequest(BaseModel):
     message: str = Field(..., min_length=1)
     session_id: Optional[str] = None
     context_style: ContextStyle = ContextStyle.SELF
+    use_knowledge_base: bool = True
 
 
 class ChatResponse(BaseModel):
     session_id: str
     message: ChatMessage
     sources: List[QuerySource] = []
-    processing_time_ms: int
+    suggested_questions: List[str] = []
+    processing_time_ms: Optional[int] = None
 
 
 class ChatHistoryResponse(BaseModel):

@@ -5,11 +5,28 @@ import type {
   SearchResult,
   ChatSession,
   ChatMessage,
+  ContentSource,
 } from '../types'
+
+interface ChatResponse {
+  session_id: string
+  message: ChatMessage
+  sources: ContentSource[]
+  suggested_questions: string[]
+}
 
 export const assistantService = {
   async query(request: QueryRequest): Promise<QueryResponse> {
     const response = await api.post<QueryResponse>('/assistant/query', request)
+    return response.data
+  },
+
+  async chat(message: string, sessionId?: string): Promise<ChatResponse> {
+    const response = await api.post<ChatResponse>('/assistant/chat', {
+      message,
+      session_id: sessionId,
+      use_knowledge_base: true,
+    })
     return response.data
   },
 
@@ -34,8 +51,8 @@ export const assistantService = {
   },
 
   async listChatSessions(): Promise<ChatSession[]> {
-    const response = await api.get<ChatSession[]>('/assistant/chat/sessions')
-    return response.data
+    const response = await api.get<{ items: ChatSession[] }>('/assistant/chat/sessions')
+    return response.data.items || []
   },
 
   async getChatSession(sessionId: string): Promise<ChatSession> {

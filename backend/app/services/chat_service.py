@@ -100,7 +100,7 @@ class ChatService:
         await messages_collection.insert_one(message)
     
     async def _update_session(self, session_id: str):
-        result = await self.db.execute(select(ChatSession).where(ChatSession.id == int(session_id)))
+        result = await self.db.execute(select(ChatSession).where(ChatSession.session_id == session_id))
         session = result.scalar_one_or_none()
         
         if session:
