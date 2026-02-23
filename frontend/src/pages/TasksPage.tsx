@@ -21,9 +21,9 @@ import type { Task, TaskStatus, TaskPriority } from '../types'
 import toast from 'react-hot-toast'
 
 const priorityColors: Record<TaskPriority, string> = {
-  low: 'text-secondary-400',
+  low: 'text-zinc-500',
   medium: 'text-blue-400',
-  high: 'text-orange-400',
+  high: 'text-amber-400',
   urgent: 'text-red-400',
 }
 
@@ -240,18 +240,18 @@ export default function TasksPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+        <div className="w-10 h-10 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Tasks</h1>
-          <p className="text-secondary-400">Manage your to-dos and action items</p>
+          <h1 className="text-3xl font-bold text-white tracking-tight">Tasks</h1>
+          <p className="text-zinc-500 mt-1">Manage your to-dos and action items</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -261,23 +261,23 @@ export default function TasksPage() {
           >
             {isProcessingVoice ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
                 Processing...
               </>
             ) : isRecording ? (
               <>
-                <Stop fontSize="small" className="mr-1" />
+                <Stop style={{ fontSize: 16 }} className="mr-1" />
                 Stop
               </>
             ) : (
               <>
-                <Mic fontSize="small" className="mr-1" />
+                <Mic style={{ fontSize: 16 }} className="mr-1" />
                 Add Voice
               </>
             )}
           </Button>
           <Button onClick={() => setShowCreateModal(true)}>
-            <Add fontSize="small" className="mr-1" />
+            <Add style={{ fontSize: 16 }} className="mr-1" />
             Add Task
           </Button>
         </div>
@@ -416,7 +416,7 @@ function TaskColumn({ title, tasks, onToggle, onDelete }: TaskColumnProps) {
         </AnimatePresence>
 
         {tasks.length === 0 && (
-          <div className="p-4 text-center text-secondary-500 text-sm border-2 border-dashed border-secondary-700 rounded-lg">
+          <div className="p-4 text-center text-zinc-600 text-sm border-2 border-dashed border-zinc-800 rounded-xl">
             No tasks
           </div>
         )}
@@ -447,10 +447,10 @@ function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
         <div className="flex items-start gap-3">
           <button
             onClick={onToggle}
-            className="mt-0.5 text-secondary-400 hover:text-primary-400 transition-colors"
+            className="mt-0.5 text-zinc-600 hover:text-indigo-400 transition-colors"
           >
             {isDone ? (
-              <CheckCircle className="text-green-400" />
+              <CheckCircle className="text-emerald-400" />
             ) : (
               <RadioButtonUnchecked />
             )}
@@ -458,19 +458,19 @@ function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
 
           <div className="flex-1 min-w-0">
             <p
-              className={`text-white ${isDone ? 'line-through text-secondary-500' : ''}`}
+              className={`text-white ${isDone ? 'line-through text-zinc-600' : ''}`}
             >
               {task.title}
             </p>
 
             {task.description && (
-              <p className="text-secondary-500 text-sm mt-1 line-clamp-2">
+              <p className="text-zinc-600 text-sm mt-1 line-clamp-2">
                 {task.description}
               </p>
             )}
 
             <div className="flex items-center gap-2 mt-2">
-              <Flag fontSize="small" className={priorityColors[task.priority]} />
+              <Flag style={{ fontSize: 14 }} className={priorityColors[task.priority]} />
               <Badge variant={priorityBadgeVariants[task.priority]} size="sm">
                 {task.priority}
               </Badge>
@@ -481,11 +481,11 @@ function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
                     isOverdue
                       ? 'text-red-400'
                       : isDueToday
-                      ? 'text-orange-400'
-                      : 'text-secondary-500'
+                      ? 'text-amber-400'
+                      : 'text-zinc-600'
                   }`}
                 >
-                  <Schedule fontSize="small" />
+                  <Schedule style={{ fontSize: 14 }} />
                   {format(new Date(task.due_date), 'MMM d')}
                 </div>
               )}
@@ -500,9 +500,9 @@ function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
 
           <button
             onClick={onDelete}
-            className="p-1 text-secondary-500 hover:text-red-400 transition-colors"
+            className="p-1.5 rounded-lg text-zinc-600 hover:text-red-400 hover:bg-zinc-800 transition-all"
           >
-            <Delete fontSize="small" />
+            <Delete style={{ fontSize: 16 }} />
           </button>
         </div>
       </Card>

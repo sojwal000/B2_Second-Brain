@@ -9,6 +9,7 @@ import {
   Star,
   Schedule,
   ArrowForward,
+  AutoAwesome,
 } from '@mui/icons-material'
 import { Card, CardContent, Badge } from '../components/ui'
 import { dashboardService } from '../services'
@@ -23,7 +24,6 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch stats and activity separately so one failure doesn't break both
         const statsData = await dashboardService.getStats().catch(err => {
           console.error('Failed to fetch stats:', err)
           return null
@@ -47,7 +47,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+        <div className="w-10 h-10 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
       </div>
     )
   }
@@ -57,60 +57,61 @@ export default function DashboardPage() {
       title: 'Total Content',
       value: stats?.total_content || 0,
       icon: Article,
-      color: 'text-blue-400',
-      bgColor: 'bg-blue-500/10',
+      gradient: 'from-blue-500 to-cyan-500',
+      bgGlow: 'bg-blue-500/5',
     },
     {
       title: 'Flashcards Due',
       value: stats?.flashcards_due || 0,
       icon: Style,
-      color: 'text-purple-400',
-      bgColor: 'bg-purple-500/10',
+      gradient: 'from-purple-500 to-pink-500',
+      bgGlow: 'bg-purple-500/5',
     },
     {
       title: 'Pending Tasks',
       value: stats?.tasks_pending || 0,
       icon: Task,
-      color: 'text-orange-400',
-      bgColor: 'bg-orange-500/10',
+      gradient: 'from-amber-500 to-orange-500',
+      bgGlow: 'bg-amber-500/5',
     },
     {
       title: 'Study Streak',
       value: `${stats?.study_streak || 0} days`,
       icon: TrendingUp,
-      color: 'text-green-400',
-      bgColor: 'bg-green-500/10',
+      gradient: 'from-emerald-500 to-green-500',
+      bgGlow: 'bg-emerald-500/5',
     },
   ]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 max-w-7xl">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-        <p className="text-secondary-400">Welcome back! Here's your knowledge overview.</p>
+        <h1 className="text-3xl font-bold text-white tracking-tight">Dashboard</h1>
+        <p className="text-zinc-500 mt-1">Welcome back! Here's your knowledge overview.</p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         {statCards.map((stat, index) => (
           <motion.div
             key={stat.title}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
+            transition={{ delay: index * 0.08 }}
           >
-            <Card className="p-4">
-              <div className="flex items-center justify-between">
+            <div className={`relative overflow-hidden rounded-2xl border border-zinc-800/80 p-5 ${stat.bgGlow}`}>
+              <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-secondary-400 text-sm">{stat.title}</p>
-                  <p className="text-2xl font-bold text-white mt-1">{stat.value}</p>
+                  <p className="text-zinc-500 text-sm font-medium">{stat.title}</p>
+                  <p className="text-3xl font-bold text-white mt-2 tracking-tight">{stat.value}</p>
                 </div>
-                <div className={`p-3 rounded-lg ${stat.bgColor}`}>
-                  <stat.icon className={stat.color} />
+                <div className={`p-2.5 rounded-xl bg-gradient-to-br ${stat.gradient} shadow-lg`}>
+                  <stat.icon className="text-white" style={{ fontSize: 20 }} />
                 </div>
               </div>
-            </Card>
+              <div className={`absolute -bottom-4 -right-4 w-24 h-24 rounded-full bg-gradient-to-br ${stat.gradient} opacity-5 blur-xl`} />
+            </div>
           </motion.div>
         ))}
       </div>
@@ -118,97 +119,104 @@ export default function DashboardPage() {
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Today's Focus */}
-        <Card className="lg:col-span-2">
-          <CardContent>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-white">Today's Focus</h2>
-              <Badge variant="primary">
-                <Schedule fontSize="small" className="mr-1" />
-                {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
-              </Badge>
-            </div>
-
-            <div className="space-y-4">
-              {/* Due Flashcards */}
-              <div
-                className="flex items-center justify-between p-4 bg-secondary-900 rounded-lg cursor-pointer hover:bg-secondary-800 transition-colors"
-                onClick={() => navigate('/flashcards')}
-              >
+        <div className="lg:col-span-2">
+          <Card>
+            <CardContent>
+              <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-purple-500/10 rounded-lg">
-                    <Style className="text-purple-400" />
+                  <div className="p-2 rounded-xl bg-indigo-500/10">
+                    <AutoAwesome className="text-indigo-400" style={{ fontSize: 20 }} />
                   </div>
-                  <div>
-                    <p className="text-white font-medium">Review Flashcards</p>
-                    <p className="text-secondary-400 text-sm">
-                      {stats?.flashcards_due || 0} cards due for review
-                    </p>
-                  </div>
+                  <h2 className="text-lg font-semibold text-white">Today's Focus</h2>
                 </div>
-                <ArrowForward className="text-secondary-500" />
+                <Badge variant="primary">
+                  <Schedule style={{ fontSize: 14 }} className="mr-1" />
+                  {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                </Badge>
               </div>
 
-              {/* Pending Tasks */}
-              <div
-                className="flex items-center justify-between p-4 bg-secondary-900 rounded-lg cursor-pointer hover:bg-secondary-800 transition-colors"
-                onClick={() => navigate('/tasks')}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-orange-500/10 rounded-lg">
-                    <Task className="text-orange-400" />
+              <div className="space-y-3">
+                {/* Due Flashcards */}
+                <div
+                  className="group flex items-center justify-between p-4 bg-zinc-900/60 rounded-xl cursor-pointer hover:bg-zinc-800/60 transition-all border border-transparent hover:border-zinc-800"
+                  onClick={() => navigate('/flashcards')}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="p-2.5 bg-purple-500/10 rounded-xl group-hover:bg-purple-500/15 transition-colors">
+                      <Style className="text-purple-400" style={{ fontSize: 20 }} />
+                    </div>
+                    <div>
+                      <p className="text-white font-medium text-sm">Review Flashcards</p>
+                      <p className="text-zinc-500 text-xs mt-0.5">
+                        {stats?.flashcards_due || 0} cards due for review
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-white font-medium">Complete Tasks</p>
-                    <p className="text-secondary-400 text-sm">
-                      {stats?.tasks_pending || 0} tasks pending
-                    </p>
-                  </div>
+                  <ArrowForward className="text-zinc-700 group-hover:text-zinc-500 transition-colors" style={{ fontSize: 18 }} />
                 </div>
-                <ArrowForward className="text-secondary-500" />
-              </div>
 
-              {/* Ask Assistant */}
-              <div
-                className="flex items-center justify-between p-4 bg-secondary-900 rounded-lg cursor-pointer hover:bg-secondary-800 transition-colors"
-                onClick={() => navigate('/assistant')}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-primary-500/10 rounded-lg">
-                    <Star className="text-primary-400" />
+                {/* Pending Tasks */}
+                <div
+                  className="group flex items-center justify-between p-4 bg-zinc-900/60 rounded-xl cursor-pointer hover:bg-zinc-800/60 transition-all border border-transparent hover:border-zinc-800"
+                  onClick={() => navigate('/tasks')}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="p-2.5 bg-amber-500/10 rounded-xl group-hover:bg-amber-500/15 transition-colors">
+                      <Task className="text-amber-400" style={{ fontSize: 20 }} />
+                    </div>
+                    <div>
+                      <p className="text-white font-medium text-sm">Complete Tasks</p>
+                      <p className="text-zinc-500 text-xs mt-0.5">
+                        {stats?.tasks_pending || 0} tasks pending
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-white font-medium">Ask Your Knowledge Base</p>
-                    <p className="text-secondary-400 text-sm">
-                      Query your personal AI assistant
-                    </p>
-                  </div>
+                  <ArrowForward className="text-zinc-700 group-hover:text-zinc-500 transition-colors" style={{ fontSize: 18 }} />
                 </div>
-                <ArrowForward className="text-secondary-500" />
+
+                {/* Ask Assistant */}
+                <div
+                  className="group flex items-center justify-between p-4 bg-zinc-900/60 rounded-xl cursor-pointer hover:bg-zinc-800/60 transition-all border border-transparent hover:border-zinc-800"
+                  onClick={() => navigate('/assistant')}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="p-2.5 bg-indigo-500/10 rounded-xl group-hover:bg-indigo-500/15 transition-colors">
+                      <Star className="text-indigo-400" style={{ fontSize: 20 }} />
+                    </div>
+                    <div>
+                      <p className="text-white font-medium text-sm">Ask Your Knowledge Base</p>
+                      <p className="text-zinc-500 text-xs mt-0.5">
+                        Query your personal AI assistant
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowForward className="text-zinc-700 group-hover:text-zinc-500 transition-colors" style={{ fontSize: 18 }} />
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Recent Activity */}
         <Card>
           <CardContent>
-            <h2 className="text-lg font-semibold text-white mb-4">Recent Activity</h2>
+            <h2 className="text-lg font-semibold text-white mb-5">Recent Activity</h2>
             <div className="space-y-3">
               {activity.length > 0 ? (
                 activity.slice(0, 5).map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-start gap-3 p-2 hover:bg-secondary-900 rounded-lg transition-colors"
+                    className="flex items-start gap-3 p-2.5 hover:bg-zinc-900/60 rounded-xl transition-colors"
                   >
-                    <div className="w-2 h-2 mt-2 rounded-full bg-primary-500" />
+                    <div className="w-1.5 h-1.5 mt-2 rounded-full bg-indigo-500 shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-white truncate">{item.title}</p>
-                      <p className="text-xs text-secondary-500">{item.action}</p>
+                      <p className="text-sm text-zinc-200 truncate">{item.title}</p>
+                      <p className="text-xs text-zinc-600 mt-0.5">{item.action}</p>
                     </div>
                   </div>
                 ))
               ) : (
-                <p className="text-secondary-500 text-sm text-center py-4">
+                <p className="text-zinc-600 text-sm text-center py-6">
                   No recent activity
                 </p>
               )}
@@ -221,12 +229,12 @@ export default function DashboardPage() {
       {stats?.content_by_type && (
         <Card>
           <CardContent>
-            <h2 className="text-lg font-semibold text-white mb-4">Content Overview</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+            <h2 className="text-lg font-semibold text-white mb-5">Content Overview</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
               {Object.entries(stats.content_by_type).map(([type, count]) => (
-                <div key={type} className="text-center p-4 bg-secondary-900 rounded-lg">
+                <div key={type} className="text-center p-4 bg-zinc-900/60 rounded-xl border border-zinc-800/50 hover:border-zinc-700/50 transition-colors">
                   <p className="text-2xl font-bold text-white">{count}</p>
-                  <p className="text-secondary-400 text-sm capitalize">{type}</p>
+                  <p className="text-zinc-500 text-xs capitalize mt-1">{type}</p>
                 </div>
               ))}
             </div>

@@ -141,7 +141,7 @@ export default function FlashcardsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+        <div className="w-10 h-10 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
       </div>
     )
   }
@@ -155,7 +155,7 @@ export default function FlashcardsPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <Button variant="ghost" onClick={() => setReviewMode(false)}>
-            <ChevronLeft fontSize="small" className="mr-1" />
+            <ChevronLeft style={{ fontSize: 16 }} className="mr-1" />
             Back to Deck
           </Button>
           <Badge variant="primary">
@@ -183,9 +183,9 @@ export default function FlashcardsPage() {
                     animate={{ rotateY: 0 }}
                     exit={{ rotateY: -180 }}
                   >
-                    <p className="text-secondary-500 text-sm mb-4">QUESTION</p>
+                    <p className="text-indigo-400 text-xs font-semibold tracking-widest mb-4">QUESTION</p>
                     <p className="text-xl text-white">{currentCard.question}</p>
-                    <p className="text-secondary-500 text-sm mt-8">
+                    <p className="text-zinc-600 text-sm mt-8">
                       Click to reveal answer
                     </p>
                   </motion.div>
@@ -196,10 +196,10 @@ export default function FlashcardsPage() {
                     animate={{ rotateY: 0 }}
                     exit={{ rotateY: 180 }}
                   >
-                    <p className="text-secondary-500 text-sm mb-4">ANSWER</p>
+                    <p className="text-emerald-400 text-xs font-semibold tracking-widest mb-4">ANSWER</p>
                     <p className="text-xl text-white mb-4">{currentCard.answer}</p>
                     {currentCard.explanation && (
-                      <p className="text-secondary-400 text-sm">
+                      <p className="text-zinc-500 text-sm">
                         {currentCard.explanation}
                       </p>
                     )}
@@ -233,7 +233,7 @@ export default function FlashcardsPage() {
             >
               <span className="text-lg">😕</span>
               <span className="text-xs mt-1">Hard</span>
-              <span className="text-[10px] text-secondary-400 mt-0.5">10 min</span>
+              <span className="text-[10px] text-zinc-500 mt-0.5">10 min</span>
             </Button>
             <Button
               variant="secondary"
@@ -242,7 +242,7 @@ export default function FlashcardsPage() {
             >
               <span className="text-lg">🙂</span>
               <span className="text-xs mt-1">Good</span>
-              <span className="text-[10px] text-secondary-400 mt-0.5">
+              <span className="text-[10px] text-zinc-500 mt-0.5">
                 {currentCard && currentCard.streak === 0 ? '1d' :
                  currentCard && currentCard.streak === 1 ? '6d' :
                  currentCard ? `${Math.round(currentCard.stability * (currentCard.difficulty >= 1.3 ? currentCard.difficulty : 2.5))}d` : '1d'}
@@ -269,27 +269,27 @@ export default function FlashcardsPage() {
   // Deck View
   if (selectedDeck) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 max-w-5xl">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="ghost" onClick={() => setSelectedDeck(null)}>
-              <ChevronLeft fontSize="small" />
+              <ChevronLeft style={{ fontSize: 16 }} />
             </Button>
             <div>
-              <h1 className="text-2xl font-bold text-white">{selectedDeck.name}</h1>
+              <h1 className="text-2xl font-bold text-white tracking-tight">{selectedDeck.name}</h1>
               {selectedDeck.description && (
-                <p className="text-secondary-400">{selectedDeck.description}</p>
+                <p className="text-zinc-500 mt-1">{selectedDeck.description}</p>
               )}
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="secondary" onClick={() => setShowAddCardModal(true)}>
-              <Add fontSize="small" className="mr-1" />
+              <Add style={{ fontSize: 16 }} className="mr-1" />
               Add Card
             </Button>
             <Button onClick={startReview} disabled={cards.length === 0}>
-              <PlayArrow fontSize="small" className="mr-1" />
+              <PlayArrow style={{ fontSize: 16 }} className="mr-1" />
               Start Review ({cards.length})
             </Button>
           </div>
@@ -299,19 +299,19 @@ export default function FlashcardsPage() {
         <div className="grid grid-cols-4 gap-4">
           <Card className="p-4 text-center">
             <p className="text-2xl font-bold text-white">{selectedDeck.card_count}</p>
-            <p className="text-secondary-400 text-sm">Total Cards</p>
+            <p className="text-zinc-500 text-sm">Total Cards</p>
           </Card>
           <Card className="p-4 text-center">
             <p className="text-2xl font-bold text-blue-400">{selectedDeck.new_count}</p>
-            <p className="text-secondary-400 text-sm">New</p>
+            <p className="text-zinc-500 text-sm">New</p>
           </Card>
           <Card className="p-4 text-center">
-            <p className="text-2xl font-bold text-orange-400">{selectedDeck.due_count}</p>
-            <p className="text-secondary-400 text-sm">Due</p>
+            <p className="text-2xl font-bold text-amber-400">{selectedDeck.due_count}</p>
+            <p className="text-zinc-500 text-sm">Due</p>
           </Card>
           <Card className="p-4 text-center">
-            <p className="text-2xl font-bold text-green-400">{selectedDeck.mastered_count}</p>
-            <p className="text-secondary-400 text-sm">Mastered</p>
+            <p className="text-2xl font-bold text-emerald-400">{selectedDeck.mastered_count}</p>
+            <p className="text-zinc-500 text-sm">Mastered</p>
           </Card>
         </div>
 
@@ -324,7 +324,7 @@ export default function FlashcardsPage() {
                 {cards.map((card) => (
                   <div
                     key={card.id}
-                    className="flex items-center justify-between p-3 bg-secondary-900 rounded-lg"
+                    className="flex items-center justify-between p-3 bg-zinc-900/60 rounded-xl border border-zinc-800/50"
                   >
                     <div className="flex-1">
                       <p className="text-white">{card.question}</p>
@@ -344,7 +344,7 @@ export default function FlashcardsPage() {
                 ))}
               </div>
             ) : (
-              <p className="text-secondary-500 text-center py-8">
+              <p className="text-zinc-600 text-center py-8">
                 No cards due for review. Great job! 🎉
               </p>
             )}
@@ -356,15 +356,15 @@ export default function FlashcardsPage() {
 
   // Decks List
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Flashcards</h1>
-          <p className="text-secondary-400">Study with spaced repetition</p>
+          <h1 className="text-3xl font-bold text-white tracking-tight">Flashcards</h1>
+          <p className="text-zinc-500 mt-1">Study with spaced repetition</p>
         </div>
         <Button onClick={() => setShowCreateModal(true)}>
-          <Add fontSize="small" className="mr-1" />
+          <Add style={{ fontSize: 16 }} className="mr-1" />
           Create Deck
         </Button>
       </div>
@@ -381,8 +381,8 @@ export default function FlashcardsPage() {
             >
               <CardContent>
                 <div className="flex items-start justify-between mb-3">
-                  <div className="p-2 bg-purple-500/10 rounded-lg">
-                    <Style className="text-purple-400" />
+                  <div className="p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20">
+                    <Style className="text-purple-400" style={{ fontSize: 18 }} />
                   </div>
                   {deck.due_count > 0 && (
                     <Badge variant="warning">{deck.due_count} due</Badge>
@@ -390,9 +390,9 @@ export default function FlashcardsPage() {
                 </div>
                 <h3 className="font-medium text-white mb-1">{deck.name}</h3>
                 {deck.description && (
-                  <p className="text-secondary-400 text-sm mb-3">{deck.description}</p>
+                  <p className="text-zinc-500 text-sm mb-3">{deck.description}</p>
                 )}
-                <div className="flex items-center justify-between text-sm text-secondary-500">
+                <div className="flex items-center justify-between text-sm text-zinc-600">
                   <span>{deck.card_count} cards</span>
                   <span>{deck.mastered_count} mastered</span>
                 </div>
@@ -402,13 +402,13 @@ export default function FlashcardsPage() {
         </div>
       ) : (
         <Card className="p-12 text-center">
-          <Style className="text-secondary-500 text-5xl mx-auto mb-4" />
+          <Style className="text-zinc-700 text-5xl mx-auto mb-4" />
           <h3 className="text-lg font-medium text-white mb-2">No decks yet</h3>
-          <p className="text-secondary-400 mb-4">
+          <p className="text-zinc-500 mb-6">
             Create a deck to start studying with flashcards
           </p>
           <Button onClick={() => setShowCreateModal(true)}>
-            <Add fontSize="small" className="mr-1" />
+            <Add style={{ fontSize: 16 }} className="mr-1" />
             Create Deck
           </Button>
         </Card>

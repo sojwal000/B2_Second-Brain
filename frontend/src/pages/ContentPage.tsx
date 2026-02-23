@@ -41,13 +41,13 @@ const contentTypeIcons: Record<ContentType, React.ElementType> = {
 }
 
 const contentTypeColors: Record<ContentType, string> = {
-  text: 'bg-blue-500/10 text-blue-400',
-  document: 'bg-purple-500/10 text-purple-400',
-  image: 'bg-green-500/10 text-green-400',
-  audio: 'bg-orange-500/10 text-orange-400',
-  video: 'bg-red-500/10 text-red-400',
-  code: 'bg-yellow-500/10 text-yellow-400',
-  url: 'bg-cyan-500/10 text-cyan-400',
+  text: 'bg-blue-500/10 text-blue-400 border border-blue-500/20',
+  document: 'bg-purple-500/10 text-purple-400 border border-purple-500/20',
+  image: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20',
+  audio: 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
+  video: 'bg-red-500/10 text-red-400 border border-red-500/20',
+  code: 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20',
+  url: 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20',
 }
 
 export default function ContentPage() {
@@ -335,53 +335,53 @@ export default function ContentPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Content Library</h1>
-          <p className="text-secondary-400">Manage your knowledge base</p>
+          <h1 className="text-3xl font-bold text-white tracking-tight">Content Library</h1>
+          <p className="text-zinc-500 mt-1">Manage your knowledge base</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="secondary" onClick={() => setShowTextModal(true)}>
-            <Add fontSize="small" className="mr-1" />
+            <Add style={{ fontSize: 16 }} className="mr-1" />
             Add Text
           </Button>
           <Button variant="secondary" onClick={() => setShowRecordModal(true)}>
-            <Mic fontSize="small" className="mr-1" />
+            <Mic style={{ fontSize: 16 }} className="mr-1" />
             Record Audio
           </Button>
           <Button onClick={() => setShowUploadModal(true)}>
-            <CloudUpload fontSize="small" className="mr-1" />
+            <CloudUpload style={{ fontSize: 16 }} className="mr-1" />
             Upload
           </Button>
         </div>
       </div>
 
       {/* Tab Selector */}
-      <div className="flex items-center gap-1 bg-secondary-800 rounded-lg p-1 w-fit">
+      <div className="flex items-center gap-1 bg-zinc-900/80 rounded-xl p-1 w-fit border border-zinc-800/50">
         <button
           onClick={() => setActiveTab('my-content')}
-          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             activeTab === 'my-content'
-              ? 'bg-primary-600 text-white'
-              : 'text-secondary-400 hover:text-white hover:bg-secondary-700'
+              ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/20'
+              : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/60'
           }`}
         >
           My Content
         </button>
         <button
           onClick={() => setActiveTab('shared-with-me')}
-          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
             activeTab === 'shared-with-me'
-              ? 'bg-primary-600 text-white'
-              : 'text-secondary-400 hover:text-white hover:bg-secondary-700'
+              ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/20'
+              : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/60'
           }`}
         >
-          <Inbox fontSize="small" />
+          <Inbox style={{ fontSize: 16 }} />
           Shared With Me
           {unreadCount > 0 && (
-            <span className="bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
+            <span className="bg-red-500 text-white text-[10px] rounded-full px-1.5 py-0.5 min-w-[18px] text-center font-bold">
               {unreadCount}
             </span>
           )}
@@ -393,7 +393,7 @@ export default function ContentPage() {
       <div className="flex flex-col md:flex-row gap-4">
         <form onSubmit={handleSearch} className="flex-1">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
             <Input
               placeholder="Search content..."
               value={searchQuery}
@@ -408,17 +408,17 @@ export default function ContentPage() {
             size="sm"
             onClick={() => setFilters({ isFavorite: !filters.isFavorite })}
           >
-            <Star fontSize="small" />
+            <Star style={{ fontSize: 16 }} />
           </Button>
           <Button
             variant={filters.isPinned ? 'primary' : 'ghost'}
             size="sm"
             onClick={() => setFilters({ isPinned: !filters.isPinned })}
           >
-            <PushPin fontSize="small" />
+            <PushPin style={{ fontSize: 16 }} />
           </Button>
           <Button variant="ghost" size="sm">
-            <FilterList fontSize="small" className="mr-1" />
+            <FilterList style={{ fontSize: 16 }} className="mr-1" />
             Filters
           </Button>
         </div>
@@ -430,7 +430,7 @@ export default function ContentPage() {
       <>
       {isLoading ? (
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+          <div className="w-10 h-10 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
         </div>
       ) : contents.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -450,13 +450,13 @@ export default function ContentPage() {
         </div>
       ) : (
         <Card className="p-12 text-center">
-          <CloudUpload className="text-secondary-500 text-5xl mx-auto mb-4" />
+          <CloudUpload className="text-zinc-700 text-5xl mx-auto mb-4" />
           <h3 className="text-lg font-medium text-white mb-2">No content yet</h3>
-          <p className="text-secondary-400 mb-4">
+          <p className="text-zinc-500 mb-6">
             Upload files or add text to start building your knowledge base
           </p>
           <Button onClick={() => setShowUploadModal(true)}>
-            <Add fontSize="small" className="mr-1" />
+            <Add style={{ fontSize: 16 }} className="mr-1" />
             Add Content
           </Button>
         </Card>
@@ -483,7 +483,7 @@ export default function ContentPage() {
         <>
           {isLoadingShared ? (
             <div className="flex items-center justify-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+              <div className="w-10 h-10 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
             </div>
           ) : sharedWithMe.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -503,9 +503,9 @@ export default function ContentPage() {
             </div>
           ) : (
             <Card className="p-12 text-center">
-              <Inbox className="text-secondary-500 text-5xl mx-auto mb-4" />
+              <Inbox className="text-zinc-700 text-5xl mx-auto mb-4" />
               <h3 className="text-lg font-medium text-white mb-2">No shared content</h3>
-              <p className="text-secondary-400">
+              <p className="text-zinc-500">
                 When someone shares content with you, it will appear here
               </p>
             </Card>
@@ -522,20 +522,20 @@ export default function ContentPage() {
       >
         <div
           {...getRootProps()}
-          className={`border-2 border-dashed rounded-xl p-12 text-center transition-colors cursor-pointer ${
+          className={`border-2 border-dashed rounded-2xl p-12 text-center transition-all cursor-pointer ${
             isDragActive
-              ? 'border-primary-500 bg-primary-500/10'
-              : 'border-secondary-600 hover:border-secondary-500'
+              ? 'border-indigo-500 bg-indigo-500/10'
+              : 'border-zinc-700 hover:border-zinc-600'
           }`}
         >
           <input {...getInputProps()} />
-          <CloudUpload className="text-secondary-400 text-5xl mx-auto mb-4" />
+          <CloudUpload className="text-zinc-600 text-5xl mx-auto mb-4" />
           {isDragActive ? (
             <p className="text-white">Drop files here...</p>
           ) : (
             <>
               <p className="text-white mb-2">Drag & drop files here</p>
-              <p className="text-secondary-500 text-sm">
+              <p className="text-zinc-600 text-sm">
                 or click to browse (PDF, DOCX, TXT, MD, images, audio, video)
               </p>
             </>
@@ -544,13 +544,13 @@ export default function ContentPage() {
 
         {isUploading && (
           <div className="mt-4">
-            <div className="flex items-center justify-between text-sm text-secondary-400 mb-2">
+            <div className="flex items-center justify-between text-sm text-zinc-500 mb-2">
               <span>Uploading...</span>
               <span>{Math.round(uploadProgress)}%</span>
             </div>
-            <div className="h-2 bg-secondary-700 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
               <div
-                className="h-full bg-primary-500 transition-all duration-300"
+                className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300 rounded-full"
                 style={{ width: `${uploadProgress}%` }}
               />
             </div>
@@ -611,15 +611,15 @@ export default function ContentPage() {
               isRecording 
                 ? 'bg-red-500/20 animate-pulse' 
                 : audioBlob 
-                  ? 'bg-green-500/20' 
-                  : 'bg-secondary-700'
+                  ? 'bg-emerald-500/20' 
+                  : 'bg-zinc-800'
             }`}>
               <Mic className={`text-4xl ${
                 isRecording 
                   ? 'text-red-500' 
                   : audioBlob 
-                    ? 'text-green-500' 
-                    : 'text-secondary-400'
+                    ? 'text-emerald-500' 
+                    : 'text-zinc-500'
               }`} />
             </div>
 
@@ -629,7 +629,7 @@ export default function ContentPage() {
             </div>
 
             {/* Status text */}
-            <p className="text-secondary-400 text-sm">
+            <p className="text-zinc-500 text-sm">
               {isRecording 
                 ? 'Recording in progress...' 
                 : audioBlob 
@@ -640,7 +640,7 @@ export default function ContentPage() {
 
           {/* Audio preview */}
           {audioBlob && !isRecording && (
-            <div className="bg-secondary-800 rounded-lg p-4">
+            <div className="bg-zinc-800/60 rounded-xl p-4">
               <audio 
                 controls 
                 className="w-full" 
@@ -653,14 +653,14 @@ export default function ContentPage() {
           <div className="flex justify-center gap-4">
             {!isRecording && !audioBlob && (
               <Button onClick={startRecording} className="px-8">
-                <Mic fontSize="small" className="mr-2" />
+                <Mic style={{ fontSize: 16 }} className="mr-2" />
                 Start Recording
               </Button>
             )}
 
             {isRecording && (
               <Button variant="danger" onClick={stopRecording} className="px-8">
-                <Stop fontSize="small" className="mr-2" />
+                <Stop style={{ fontSize: 16 }} className="mr-2" />
                 Stop Recording
               </Button>
             )}
@@ -707,11 +707,11 @@ export default function ContentPage() {
 
           {/* User search */}
           <div>
-            <label className="block text-sm font-medium text-secondary-300 mb-1">
+            <label className="block text-sm font-medium text-zinc-400 mb-1">
               Search users to share with
             </label>
             <div className="relative">
-              <PersonSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-500" />
+              <PersonSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
               <Input
                 placeholder="Type a username or name..."
                 value={shareUserQuery}
@@ -723,7 +723,7 @@ export default function ContentPage() {
 
           {/* User results */}
           {isSearchingUsers && (
-            <div className="text-center text-secondary-400 text-sm py-2">Searching...</div>
+            <div className="text-center text-zinc-500 text-sm py-2">Searching...</div>
           )}
           {userSearchResults.length > 0 && (
             <div className="max-h-48 overflow-y-auto space-y-1">
@@ -732,24 +732,24 @@ export default function ContentPage() {
                   key={user.id}
                   onClick={() => handleShare(user.username)}
                   disabled={isSharing}
-                  className="w-full flex items-center gap-3 p-3 rounded-lg bg-secondary-800 hover:bg-secondary-700 transition-colors text-left"
+                  className="w-full flex items-center gap-3 p-3 rounded-xl bg-zinc-800/60 hover:bg-zinc-800 transition-all text-left border border-zinc-800/50 hover:border-zinc-700"
                 >
-                  <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center text-white text-sm font-bold">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold">
                     {(user.full_name || user.username).charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-white text-sm font-medium truncate">{user.username}</p>
                     {user.full_name && (
-                      <p className="text-secondary-400 text-xs truncate">{user.full_name}</p>
+                      <p className="text-zinc-500 text-xs truncate">{user.full_name}</p>
                     )}
                   </div>
-                  <Send fontSize="small" className="text-primary-400" />
+                  <Send style={{ fontSize: 16 }} className="text-indigo-400" />
                 </button>
               ))}
             </div>
           )}
           {shareUserQuery.length >= 2 && !isSearchingUsers && userSearchResults.length === 0 && (
-            <p className="text-secondary-500 text-sm text-center py-2">No users found</p>
+            <p className="text-zinc-600 text-sm text-center py-2">No users found</p>
           )}
 
           <div className="flex justify-end">
@@ -774,7 +774,7 @@ interface ContentCardProps {
 
 function ContentCard({ content, index, onClick, onFavorite, onPin, onShare }: ContentCardProps) {
   const Icon = contentTypeIcons[content.content_type] || Description
-  const colorClass = contentTypeColors[content.content_type] || 'bg-secondary-500/10 text-secondary-400'
+  const colorClass = contentTypeColors[content.content_type] || 'bg-zinc-500/10 text-zinc-400 border border-zinc-500/20'
 
   return (
     <motion.div
@@ -786,8 +786,8 @@ function ContentCard({ content, index, onClick, onFavorite, onPin, onShare }: Co
       <Card hoverable onClick={onClick} className="h-full">
         <CardContent>
           <div className="flex items-start justify-between mb-3">
-            <div className={`p-2 rounded-lg ${colorClass}`}>
-              <Icon fontSize="small" />
+            <div className={`p-2.5 rounded-xl ${colorClass}`}>
+              <Icon style={{ fontSize: 18 }} />
             </div>
             <div className="flex items-center gap-1">
               <button
@@ -795,34 +795,34 @@ function ContentCard({ content, index, onClick, onFavorite, onPin, onShare }: Co
                   e.stopPropagation()
                   onFavorite()
                 }}
-                className={`p-1 rounded hover:bg-secondary-700 transition-colors ${
-                  content.is_favorite ? 'text-yellow-400' : 'text-secondary-500'
+                className={`p-1.5 rounded-lg hover:bg-zinc-800 transition-colors ${
+                  content.is_favorite ? 'text-amber-400' : 'text-zinc-600'
                 }`}
               >
-                <Star fontSize="small" />
+                <Star style={{ fontSize: 16 }} />
               </button>
               <button
                 onClick={(e) => {
                   e.stopPropagation()
                   onPin()
                 }}
-                className={`p-1 rounded hover:bg-secondary-700 transition-colors ${
-                  content.is_pinned ? 'text-primary-400' : 'text-secondary-500'
+                className={`p-1.5 rounded-lg hover:bg-zinc-800 transition-colors ${
+                  content.is_pinned ? 'text-indigo-400' : 'text-zinc-600'
                 }`}
               >
-                <PushPin fontSize="small" />
+                <PushPin style={{ fontSize: 16 }} />
               </button>
               <button
                 onClick={(e) => {
                   e.stopPropagation()
                   onShare()
                 }}
-                className="p-1 rounded hover:bg-secondary-700 transition-colors text-secondary-500 hover:text-primary-400"
+                className="p-1.5 rounded-lg hover:bg-zinc-800 transition-colors text-zinc-600 hover:text-indigo-400"
               >
-                <Share fontSize="small" />
+                <Share style={{ fontSize: 16 }} />
               </button>
-              <button className="p-1 rounded hover:bg-secondary-700 transition-colors text-secondary-500">
-                <MoreVert fontSize="small" />
+              <button className="p-1.5 rounded-lg hover:bg-zinc-800 transition-colors text-zinc-600">
+                <MoreVert style={{ fontSize: 16 }} />
               </button>
             </div>
           </div>
@@ -830,7 +830,7 @@ function ContentCard({ content, index, onClick, onFavorite, onPin, onShare }: Co
           <h3 className="font-medium text-white mb-2 line-clamp-2">{content.title}</h3>
 
           {content.summary && (
-            <p className="text-secondary-400 text-sm mb-3 line-clamp-2">
+            <p className="text-zinc-500 text-sm mb-3 line-clamp-2">
               {content.summary}
             </p>
           )}
@@ -848,11 +848,11 @@ function ContentCard({ content, index, onClick, onFavorite, onPin, onShare }: Co
             ))}
           </div>
 
-          <div className="flex items-center justify-between mt-4 pt-3 border-t border-secondary-700">
-            <span className="text-xs text-secondary-500 capitalize">
+          <div className="flex items-center justify-between mt-4 pt-3 border-t border-zinc-800/80">
+            <span className="text-xs text-zinc-600 capitalize">
               {content.content_type}
             </span>
-            <span className="text-xs text-secondary-500">
+            <span className="text-xs text-zinc-600">
               {new Date(content.created_at).toLocaleDateString()}
             </span>
           </div>
@@ -871,7 +871,7 @@ interface SharedContentCardProps {
 
 function SharedContentCard({ item, index, onClick }: SharedContentCardProps) {
   const Icon = contentTypeIcons[item.content_type] || Description
-  const colorClass = contentTypeColors[item.content_type] || 'bg-secondary-500/10 text-secondary-400'
+  const colorClass = contentTypeColors[item.content_type] || 'bg-zinc-500/10 text-zinc-400 border border-zinc-500/20'
 
   return (
     <motion.div
@@ -880,17 +880,17 @@ function SharedContentCard({ item, index, onClick }: SharedContentCardProps) {
       exit={{ opacity: 0, y: -20 }}
       transition={{ delay: index * 0.05 }}
     >
-      <Card hoverable onClick={onClick} className={`h-full ${!item.is_read ? 'ring-1 ring-primary-500/50' : ''}`}>
+      <Card hoverable onClick={onClick} className={`h-full ${!item.is_read ? 'ring-1 ring-indigo-500/40' : ''}`}>
         <CardContent>
           <div className="flex items-start justify-between mb-3">
-            <div className={`p-2 rounded-lg ${colorClass}`}>
-              <Icon fontSize="small" />
+            <div className={`p-2.5 rounded-xl ${colorClass}`}>
+              <Icon style={{ fontSize: 18 }} />
             </div>
             <div className="flex items-center gap-2">
               {!item.is_read && (
-                <span className="w-2.5 h-2.5 rounded-full bg-primary-500" title="Unread" />
+                <span className="w-2 h-2 rounded-full bg-indigo-500" title="Unread" />
               )}
-              <People fontSize="small" className="text-secondary-500" />
+              <People style={{ fontSize: 16 }} className="text-zinc-600" />
             </div>
           </div>
 
@@ -899,27 +899,27 @@ function SharedContentCard({ item, index, onClick }: SharedContentCardProps) {
           </h3>
 
           {item.content_summary && (
-            <p className="text-secondary-400 text-sm mb-2 line-clamp-2">
+            <p className="text-zinc-500 text-sm mb-2 line-clamp-2">
               {item.content_summary}
             </p>
           )}
 
           {item.message && (
-            <div className="bg-secondary-800 rounded-lg px-3 py-2 mb-3">
-              <p className="text-secondary-300 text-xs italic line-clamp-2">"{item.message}"</p>
+            <div className="bg-zinc-800/60 rounded-xl px-3 py-2 mb-3">
+              <p className="text-zinc-400 text-xs italic line-clamp-2">"{item.message}"</p>
             </div>
           )}
 
-          <div className="flex items-center justify-between mt-4 pt-3 border-t border-secondary-700">
-            <div className="flex items-center gap-1">
-              <div className="w-5 h-5 rounded-full bg-primary-600 flex items-center justify-center text-[10px] text-white font-bold">
+          <div className="flex items-center justify-between mt-4 pt-3 border-t border-zinc-800/80">
+            <div className="flex items-center gap-1.5">
+              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-[10px] text-white font-bold">
                 {(item.shared_by_fullname || item.shared_by_username).charAt(0).toUpperCase()}
               </div>
-              <span className="text-xs text-secondary-400 truncate max-w-[100px]">
+              <span className="text-xs text-zinc-500 truncate max-w-[100px]">
                 {item.shared_by_fullname || item.shared_by_username}
               </span>
             </div>
-            <span className="text-xs text-secondary-500">
+            <span className="text-xs text-zinc-600">
               {new Date(item.shared_at).toLocaleDateString()}
             </span>
           </div>

@@ -132,20 +132,20 @@ export default function AssistantPage() {
   }
 
   return (
-    <div className="h-[calc(100vh-8rem)] flex flex-col">
+    <div className="h-[calc(100vh-8rem)] flex flex-col max-w-5xl">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">AI Assistant</h1>
-          <p className="text-secondary-400">Ask questions about your knowledge base</p>
+          <h1 className="text-3xl font-bold text-white tracking-tight">AI Assistant</h1>
+          <p className="text-zinc-500 mt-1">Ask questions about your knowledge base</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" onClick={loadHistory}>
-            <History fontSize="small" className="mr-1" />
+            <History style={{ fontSize: 16 }} className="mr-1" />
             History
           </Button>
           <Button variant="ghost" size="sm" onClick={clearChat}>
-            <Delete fontSize="small" className="mr-1" />
+            <Delete style={{ fontSize: 16 }} className="mr-1" />
             Clear
           </Button>
         </div>
@@ -157,33 +157,33 @@ export default function AssistantPage() {
         onClose={() => setShowHistory(false)}
         title="Chat History"
       >
-        <div className="space-y-3 max-h-96 overflow-y-auto">
+        <div className="space-y-2 max-h-96 overflow-y-auto">
           {loadingHistory ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-500"></div>
+              <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
             </div>
           ) : chatSessions.length === 0 ? (
-            <div className="text-center py-8 text-secondary-400">
+            <div className="text-center py-8 text-zinc-500">
               <Chat className="text-4xl mb-2 opacity-50" />
               <p>No chat history yet</p>
-              <p className="text-sm">Your conversations will appear here</p>
+              <p className="text-sm text-zinc-600">Your conversations will appear here</p>
             </div>
           ) : (
             chatSessions.map((session) => (
               <button
                 key={session.id}
                 onClick={() => loadSession(session)}
-                className="w-full text-left p-3 bg-secondary-800 hover:bg-secondary-700 rounded-lg transition-colors"
+                className="w-full text-left p-3 bg-zinc-800/60 hover:bg-zinc-800 rounded-xl transition-all border border-zinc-800/50 hover:border-zinc-700"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-white font-medium truncate">
                     {session.title || 'Untitled Chat'}
                   </span>
-                  <span className="text-secondary-500 text-xs">
+                  <span className="text-zinc-600 text-xs">
                     {new Date(session.updated_at).toLocaleDateString()}
                   </span>
                 </div>
-                <p className="text-secondary-400 text-sm mt-1 truncate">
+                <p className="text-zinc-500 text-sm mt-1 truncate">
                   {session.messages?.length || 0} messages
                 </p>
               </button>
@@ -194,16 +194,16 @@ export default function AssistantPage() {
 
       {/* Chat Area */}
       <Card className="flex-1 flex flex-col overflow-hidden">
-        <CardContent className="flex-1 overflow-y-auto space-y-4 p-4">
+        <CardContent className="flex-1 overflow-y-auto space-y-4 p-5">
           {messages.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center">
-              <div className="w-16 h-16 bg-primary-500/10 rounded-2xl flex items-center justify-center mb-4">
-                <AutoAwesome className="text-primary-400 text-3xl" />
+              <div className="w-16 h-16 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-2xl flex items-center justify-center mb-4 border border-indigo-500/10">
+                <AutoAwesome className="text-indigo-400 text-3xl" />
               </div>
               <h2 className="text-xl font-semibold text-white mb-2">
                 Ask Your Knowledge Base
               </h2>
-              <p className="text-secondary-400 max-w-md mb-6">
+              <p className="text-zinc-500 max-w-md mb-6">
                 I can answer questions based on your uploaded content. Try asking about
                 concepts, summaries, or specific information from your documents.
               </p>
@@ -211,12 +211,12 @@ export default function AssistantPage() {
               {/* Suggested Questions */}
               {suggestedQuestions.length > 0 && (
                 <div className="space-y-2 w-full max-w-lg">
-                  <p className="text-secondary-500 text-sm">Try asking:</p>
+                  <p className="text-zinc-600 text-sm">Try asking:</p>
                   {suggestedQuestions.map((question, index) => (
                     <button
                       key={index}
                       onClick={() => handleSuggestionClick(question)}
-                      className="w-full text-left p-3 bg-secondary-900 hover:bg-secondary-800 rounded-lg text-secondary-300 transition-colors"
+                      className="w-full text-left p-3 bg-zinc-900/60 hover:bg-zinc-800/80 rounded-xl text-zinc-400 transition-all border border-zinc-800/50 hover:border-zinc-700"
                     >
                       {question}
                     </button>
@@ -233,12 +233,12 @@ export default function AssistantPage() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="flex items-center gap-2 text-secondary-400"
+                  className="flex items-center gap-2 text-zinc-500"
                 >
                   <div className="flex gap-1">
-                    <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce" />
-                    <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce [animation-delay:0.1s]" />
-                    <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce [animation-delay:0.2s]" />
+                    <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" />
+                    <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce [animation-delay:0.1s]" />
+                    <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce [animation-delay:0.2s]" />
                   </div>
                   <span className="text-sm">Thinking...</span>
                 </motion.div>
@@ -249,7 +249,7 @@ export default function AssistantPage() {
         </CardContent>
 
         {/* Input Area */}
-        <div className="p-4 border-t border-secondary-700">
+        <div className="p-4 border-t border-zinc-800/80">
           <form onSubmit={handleSubmit} className="flex gap-2">
             <Input
               value={query}
@@ -259,7 +259,7 @@ export default function AssistantPage() {
               disabled={isLoading}
             />
             <Button type="submit" disabled={!query.trim() || isLoading}>
-              <Send fontSize="small" />
+              <Send style={{ fontSize: 16 }} />
             </Button>
           </form>
         </div>
@@ -284,8 +284,8 @@ function MessageBubble({ message }: MessageBubbleProps) {
       <div
         className={`max-w-[80%] rounded-2xl p-4 ${
           isUser
-            ? 'bg-primary-500 text-white'
-            : 'bg-secondary-800 text-secondary-200'
+            ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/20'
+            : 'bg-zinc-800/80 text-zinc-300 border border-zinc-800/50'
         }`}
       >
         {isUser ? (
@@ -320,9 +320,9 @@ function MessageBubble({ message }: MessageBubbleProps) {
 
             {/* Sources */}
             {message.sources && message.sources.length > 0 && (
-              <div className="border-t border-secondary-700 pt-3 mt-3">
-                <p className="text-secondary-500 text-xs mb-2 flex items-center gap-1">
-                  <Article fontSize="small" />
+              <div className="border-t border-zinc-700/50 pt-3 mt-3">
+                <p className="text-zinc-600 text-xs mb-2 flex items-center gap-1">
+                  <Article style={{ fontSize: 14 }} />
                   Sources
                 </p>
                 <div className="flex flex-wrap gap-2">

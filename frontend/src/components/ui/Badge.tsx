@@ -12,22 +12,22 @@ export default function Badge({
   className = '',
 }: BadgeProps) {
   const variants = {
-    default: 'bg-secondary-700 text-secondary-300',
-    primary: 'bg-primary-500/20 text-primary-400',
-    success: 'bg-green-500/20 text-green-400',
-    warning: 'bg-yellow-500/20 text-yellow-400',
-    danger: 'bg-red-500/20 text-red-400',
-    info: 'bg-blue-500/20 text-blue-400',
+    default: 'bg-zinc-800 text-zinc-400 border border-zinc-700/50',
+    primary: 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20',
+    success: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20',
+    warning: 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
+    danger: 'bg-red-500/10 text-red-400 border border-red-500/20',
+    info: 'bg-sky-500/10 text-sky-400 border border-sky-500/20',
   }
 
   const sizes = {
-    sm: 'px-2 py-0.5 text-xs',
-    md: 'px-2.5 py-1 text-sm',
+    sm: 'px-2 py-0.5 text-[10px] tracking-wide',
+    md: 'px-2.5 py-0.5 text-xs',
   }
 
   return (
     <span
-      className={`inline-flex items-center font-medium rounded-full ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`inline-flex items-center font-medium rounded-lg ${variants[variant]} ${sizes[size]} ${className}`}
     >
       {children}
     </span>

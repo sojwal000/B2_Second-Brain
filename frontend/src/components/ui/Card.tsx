@@ -9,14 +9,14 @@ interface CardProps {
 }
 
 export default function Card({ children, className = '', onClick, hoverable = false }: CardProps) {
-  const baseStyles = 'bg-secondary-800 rounded-xl border border-secondary-700'
-  const hoverStyles = hoverable ? 'hover:border-secondary-600 cursor-pointer' : ''
+  const baseStyles = 'bg-zinc-900/80 rounded-2xl border border-zinc-800/80 backdrop-blur-sm'
+  const hoverStyles = hoverable ? 'hover:border-zinc-700/80 hover:bg-zinc-900/90 cursor-pointer transition-all duration-300' : ''
 
   if (onClick) {
     return (
       <motion.div
-        whileHover={hoverable ? { scale: 1.02, y: -2 } : undefined}
-        whileTap={hoverable ? { scale: 0.98 } : undefined}
+        whileHover={hoverable ? { scale: 1.01, y: -2 } : undefined}
+        whileTap={hoverable ? { scale: 0.99 } : undefined}
         className={`${baseStyles} ${hoverStyles} ${className}`}
         onClick={onClick}
       >
@@ -39,7 +39,7 @@ interface CardHeaderProps {
 
 export function CardHeader({ children, className = '' }: CardHeaderProps) {
   return (
-    <div className={`p-4 border-b border-secondary-700 ${className}`}>
+    <div className={`p-5 border-b border-zinc-800/80 ${className}`}>
       {children}
     </div>
   )
@@ -51,7 +51,7 @@ interface CardContentProps {
 }
 
 export function CardContent({ children, className = '' }: CardContentProps) {
-  return <div className={`p-4 ${className}`}>{children}</div>
+  return <div className={`p-5 ${className}`}>{children}</div>
 }
 
 interface CardFooterProps {
@@ -61,7 +61,7 @@ interface CardFooterProps {
 
 export function CardFooter({ children, className = '' }: CardFooterProps) {
   return (
-    <div className={`p-4 border-t border-secondary-700 ${className}`}>
+    <div className={`p-5 border-t border-zinc-800/80 ${className}`}>
       {children}
     </div>
   )

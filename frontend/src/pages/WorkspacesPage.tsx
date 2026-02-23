@@ -158,22 +158,22 @@ export default function WorkspacesPage() {
   }
 
   const roleColors: Record<string, string> = {
-    owner: 'bg-yellow-600/20 text-yellow-400',
-    admin: 'bg-purple-600/20 text-purple-400',
-    editor: 'bg-blue-600/20 text-blue-400',
-    viewer: 'bg-secondary-700 text-secondary-300',
+    owner: 'bg-amber-600/20 text-amber-400 border border-amber-500/20',
+    admin: 'bg-purple-600/20 text-purple-400 border border-purple-500/20',
+    editor: 'bg-blue-600/20 text-blue-400 border border-blue-500/20',
+    viewer: 'bg-zinc-800 text-zinc-400 border border-zinc-700/50',
   }
 
   // ========== LIST VIEW ==========
   if (view === 'list') {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 max-w-7xl">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-              <WorkspacesIcon className="text-primary-400" /> Workspaces
+            <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-2">
+              <WorkspacesIcon className="text-indigo-400" /> Workspaces
             </h1>
-            <p className="text-secondary-400 mt-1">Collaborate with others on shared content</p>
+            <p className="text-zinc-500 mt-1">Collaborate with others on shared content</p>
           </div>
           <Button onClick={() => setShowCreate(true)}>
             <Add className="w-4 h-4 mr-1" /> New Workspace
@@ -182,14 +182,14 @@ export default function WorkspacesPage() {
 
         {isLoading ? (
           <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary-500" />
+            <div className="w-10 h-10 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
           </div>
         ) : workspaces.length === 0 ? (
           <Card>
             <CardContent className="text-center py-12">
-              <WorkspacesIcon className="text-secondary-600 mx-auto mb-4" style={{ fontSize: 48 }} />
-              <h3 className="text-lg font-medium text-secondary-300 mb-2">No Workspaces</h3>
-              <p className="text-secondary-500 mb-4">Create a workspace to collaborate with others</p>
+              <WorkspacesIcon className="text-zinc-700 mx-auto mb-4" style={{ fontSize: 48 }} />
+              <h3 className="text-lg font-medium text-zinc-400 mb-2">No Workspaces</h3>
+              <p className="text-zinc-600 mb-6">Create a workspace to collaborate with others</p>
               <Button onClick={() => setShowCreate(true)}>Create Workspace</Button>
             </CardContent>
           </Card>
@@ -202,7 +202,8 @@ export default function WorkspacesPage() {
                 animate={{ opacity: 1, y: 0 }}
               >
                 <Card
-                  className="cursor-pointer hover:border-primary-500/50 transition-colors"
+                  className="cursor-pointer"
+                  hoverable
                   onClick={() => openWorkspace(ws.id)}
                 >
                   <CardContent className="p-4">
@@ -210,15 +211,15 @@ export default function WorkspacesPage() {
                       <h3 className="font-medium text-white">{ws.name}</h3>
                       <button
                         onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(ws.id) }}
-                        className="text-secondary-500 hover:text-red-400"
+                        className="text-zinc-600 hover:text-red-400 p-1 rounded-lg hover:bg-zinc-800 transition-all"
                       >
-                        <Delete fontSize="small" />
+                        <Delete style={{ fontSize: 16 }} />
                       </button>
                     </div>
                     {ws.description && (
-                      <p className="text-sm text-secondary-400 mb-3 line-clamp-2">{ws.description}</p>
+                      <p className="text-sm text-zinc-500 mb-3 line-clamp-2">{ws.description}</p>
                     )}
-                    <div className="flex items-center gap-3 text-xs text-secondary-500">
+                    <div className="flex items-center gap-3 text-xs text-zinc-600">
                       <span className="flex items-center gap-1">
                         <Group fontSize="inherit" /> {ws.member_count} members
                       </span>
@@ -226,7 +227,7 @@ export default function WorkspacesPage() {
                         <Article fontSize="inherit" /> {ws.content_count} items
                       </span>
                     </div>
-                    <p className="text-xs text-secondary-500 mt-2">
+                    <p className="text-xs text-zinc-600 mt-2">
                       by {ws.owner_username} · {new Date(ws.created_at).toLocaleDateString()}
                     </p>
                   </CardContent>
@@ -240,23 +241,23 @@ export default function WorkspacesPage() {
         <Modal isOpen={showCreate} onClose={() => setShowCreate(false)} title="Create Workspace">
           <div className="space-y-4">
             <div>
-              <label className="block text-sm text-secondary-300 mb-1">Name</label>
+              <label className="block text-sm text-zinc-400 mb-1">Name</label>
               <input
                 type="text"
                 value={newName}
                 onChange={e => setNewName(e.target.value)}
                 placeholder="Workspace name"
-                className="w-full bg-secondary-800 border border-secondary-700 rounded-lg px-3 py-2 text-white focus:border-primary-500 focus:outline-none"
+                className="w-full bg-zinc-900/80 border border-zinc-800 rounded-xl px-3 py-2.5 text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition-all"
               />
             </div>
             <div>
-              <label className="block text-sm text-secondary-300 mb-1">Description (optional)</label>
+              <label className="block text-sm text-zinc-400 mb-1">Description (optional)</label>
               <textarea
                 value={newDesc}
                 onChange={e => setNewDesc(e.target.value)}
                 placeholder="What's this workspace for?"
                 rows={3}
-                className="w-full bg-secondary-800 border border-secondary-700 rounded-lg px-3 py-2 text-white focus:border-primary-500 focus:outline-none resize-none"
+                className="w-full bg-zinc-900/80 border border-zinc-800 rounded-xl px-3 py-2.5 text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none resize-none transition-all"
               />
             </div>
             <div className="flex gap-2 justify-end">
@@ -268,11 +269,11 @@ export default function WorkspacesPage() {
 
         {/* Delete confirmation */}
         <Modal isOpen={!!showDeleteConfirm} onClose={() => setShowDeleteConfirm(null)} title="Delete Workspace">
-          <p className="text-secondary-300 mb-4">This will permanently delete the workspace and remove all members. Content will not be deleted.</p>
+          <p className="text-zinc-400 mb-4">This will permanently delete the workspace and remove all members. Content will not be deleted.</p>
           <div className="flex gap-2 justify-end">
             <Button variant="ghost" onClick={() => setShowDeleteConfirm(null)}>Cancel</Button>
             <Button
-              className="bg-red-600 hover:bg-red-700"
+              variant="danger"
               onClick={() => showDeleteConfirm && handleDelete(showDeleteConfirm)}
             >
               Delete
@@ -286,26 +287,26 @@ export default function WorkspacesPage() {
   // ========== DETAIL VIEW ==========
   if (view === 'detail' && selectedWs) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 max-w-7xl">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button onClick={() => { setView('list'); setSelectedWs(null) }} className="text-secondary-400 hover:text-white">
+            <button onClick={() => { setView('list'); setSelectedWs(null) }} className="text-zinc-500 hover:text-white transition-colors">
               <ArrowBack />
             </button>
             <div>
-              <h1 className="text-2xl font-bold text-white">{selectedWs.name}</h1>
+              <h1 className="text-2xl font-bold text-white tracking-tight">{selectedWs.name}</h1>
               {selectedWs.description && (
-                <p className="text-secondary-400 mt-0.5">{selectedWs.description}</p>
+                <p className="text-zinc-500 mt-0.5">{selectedWs.description}</p>
               )}
             </div>
           </div>
           <div className="flex gap-2">
             <Button variant="ghost" size="sm" onClick={() => setShowAddMember(true)}>
-              <PersonAdd fontSize="small" className="mr-1" /> Add Member
+              <PersonAdd style={{ fontSize: 16 }} className="mr-1" /> Add Member
             </Button>
             <Button size="sm" onClick={openAddContent}>
-              <Add fontSize="small" className="mr-1" /> Add Content
+              <Add style={{ fontSize: 16 }} className="mr-1" /> Add Content
             </Button>
           </div>
         </div>
@@ -314,29 +315,29 @@ export default function WorkspacesPage() {
           {/* Members */}
           <Card className="lg:col-span-1">
             <CardContent className="p-4">
-              <h2 className="text-sm font-medium text-secondary-300 mb-3 flex items-center gap-2">
-                <Group fontSize="small" /> Members ({selectedWs.members.length})
+              <h2 className="text-sm font-medium text-zinc-400 mb-3 flex items-center gap-2">
+                <Group style={{ fontSize: 16 }} /> Members ({selectedWs.members.length})
               </h2>
               <div className="space-y-2">
                 {selectedWs.members.map((m) => (
-                  <div key={m.user_id} className="flex items-center justify-between p-2 rounded-lg bg-secondary-800/50">
+                  <div key={m.user_id} className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800/50">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-primary-600/30 flex items-center justify-center text-sm text-primary-400 font-medium">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500/30 to-purple-500/30 flex items-center justify-center text-sm text-indigo-400 font-medium">
                         {(m.full_name || m.username)[0].toUpperCase()}
                       </div>
                       <div>
                         <p className="text-sm text-white">{m.full_name || m.username}</p>
-                        <p className="text-xs text-secondary-500">@{m.username}</p>
+                        <p className="text-xs text-zinc-600">@{m.username}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={`text-xs px-2 py-0.5 rounded capitalize ${roleColors[m.role] || roleColors.viewer}`}>
+                      <span className={`text-xs px-2 py-0.5 rounded-lg capitalize ${roleColors[m.role] || roleColors.viewer}`}>
                         {m.role}
                       </span>
                       {m.role !== 'owner' && (
                         <button
                           onClick={() => handleRemoveMember(m.user_id)}
-                          className="text-secondary-500 hover:text-red-400"
+                          className="text-zinc-600 hover:text-red-400 transition-colors"
                         >
                           <PersonRemove style={{ fontSize: 16 }} />
                         </button>
@@ -351,32 +352,32 @@ export default function WorkspacesPage() {
           {/* Content */}
           <Card className="lg:col-span-2">
             <CardContent className="p-4">
-              <h2 className="text-sm font-medium text-secondary-300 mb-3 flex items-center gap-2">
-                <Article fontSize="small" /> Content ({selectedWs.contents.length})
+              <h2 className="text-sm font-medium text-zinc-400 mb-3 flex items-center gap-2">
+                <Article style={{ fontSize: 16 }} /> Content ({selectedWs.contents.length})
               </h2>
               {selectedWs.contents.length === 0 ? (
-                <p className="text-secondary-500 text-sm py-4 text-center">No content added yet</p>
+                <p className="text-zinc-600 text-sm py-4 text-center">No content added yet</p>
               ) : (
                 <div className="space-y-2">
                   {selectedWs.contents.map((c) => (
                     <div
                       key={c.id}
-                      className="flex items-center justify-between p-3 rounded-lg bg-secondary-800/50 hover:bg-secondary-800 transition-colors"
+                      className="flex items-center justify-between p-3 rounded-xl bg-zinc-900/60 hover:bg-zinc-800/80 transition-all border border-zinc-800/50 hover:border-zinc-700"
                     >
                       <div
                         className="flex-1 cursor-pointer"
                         onClick={() => navigate(`/content/${c.content_id}`)}
                       >
                         <p className="text-sm text-white">{c.content_title || 'Untitled'}</p>
-                        <p className="text-xs text-secondary-500">
+                        <p className="text-xs text-zinc-600">
                           {c.content_type} · added by {c.added_by_username} · {new Date(c.added_at).toLocaleDateString()}
                         </p>
                       </div>
                       <button
                         onClick={() => handleRemoveContent(c.content_id)}
-                        className="text-secondary-500 hover:text-red-400 ml-2"
+                        className="text-zinc-600 hover:text-red-400 ml-2 p-1 rounded-lg hover:bg-zinc-800 transition-all"
                       >
-                        <Close fontSize="small" />
+                        <Close style={{ fontSize: 16 }} />
                       </button>
                     </div>
                   ))}
@@ -390,21 +391,21 @@ export default function WorkspacesPage() {
         <Modal isOpen={showAddMember} onClose={() => setShowAddMember(false)} title="Add Member">
           <div className="space-y-4">
             <div>
-              <label className="block text-sm text-secondary-300 mb-1">Username</label>
+              <label className="block text-sm text-zinc-400 mb-1">Username</label>
               <input
                 type="text"
                 value={memberUsername}
                 onChange={e => setMemberUsername(e.target.value)}
                 placeholder="Enter username"
-                className="w-full bg-secondary-800 border border-secondary-700 rounded-lg px-3 py-2 text-white focus:border-primary-500 focus:outline-none"
+                className="w-full bg-zinc-900/80 border border-zinc-800 rounded-xl px-3 py-2.5 text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition-all"
               />
             </div>
             <div>
-              <label className="block text-sm text-secondary-300 mb-1">Role</label>
+              <label className="block text-sm text-zinc-400 mb-1">Role</label>
               <select
                 value={memberRole}
                 onChange={e => setMemberRole(e.target.value)}
-                className="w-full bg-secondary-800 border border-secondary-700 rounded-lg px-3 py-2 text-white focus:border-primary-500 focus:outline-none"
+                className="w-full bg-zinc-900/80 border border-zinc-800 rounded-xl px-3 py-2.5 text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition-all"
               >
                 <option value="viewer">Viewer - Can view content</option>
                 <option value="editor">Editor - Can add/remove content</option>
@@ -424,7 +425,7 @@ export default function WorkspacesPage() {
             <select
               value={selectedContentId || ''}
               onChange={e => setSelectedContentId(Number(e.target.value) || null)}
-              className="w-full bg-secondary-800 border border-secondary-700 rounded-lg px-3 py-2 text-white focus:border-primary-500 focus:outline-none"
+              className="w-full bg-zinc-900/80 border border-zinc-800 rounded-xl px-3 py-2.5 text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition-all"
             >
               <option value="">Select content...</option>
               {userContents

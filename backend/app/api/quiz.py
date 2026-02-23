@@ -329,3 +329,4 @@ async def delete_quiz(
     await db.delete(quiz)
     await db.commit()
     return SuccessResponse(message="Quiz deleted successfully")
+ 

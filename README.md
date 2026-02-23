@@ -1,222 +1,162 @@
-# B2 Second Brain v2.0
+<div align="center">
 
-A personal AI-powered knowledge management system that captures, organizes, and retrieves multimodal content (text, images, audio, video, documents) using advanced AI capabilities.
+# B2 — Second Brain
 
-![B2 Second Brain](frontend/public/brain.svg)
+**Your AI-powered knowledge management system.**
 
-## ✨ Features
+Capture, organize, and retrieve multimodal content — text, images, audio, video, and documents — with intelligent search, spaced repetition, and a conversational AI assistant.
 
-### 📚 Content Management
-- **Multi-format Support**: Text, PDF, DOCX, images, audio, video, URLs
-- **Smart Organization**: Auto-tagging, favorites, pinning, archival
-- **OCR & STT**: Extract text from images and transcribe audio/video
-- **Web Content**: Fetch and save content from URLs with YouTube support
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/React_18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 
-### 🤖 AI-Powered Intelligence
-- **RAG Q&A System**: Chat with your knowledge base using retrieval-augmented generation
-- **Multi-Provider LLM**: Support for Gemini, OpenAI, and Anthropic
-- **Hybrid Search**: Vector similarity + keyword search with reranking
-- **Auto-Summarization**: AI-generated summaries for all content
+</div>
 
-### 📝 Flashcards & Learning
-- **SM-2 Algorithm**: Spaced repetition for optimal retention
-- **AI Generation**: Auto-generate flashcards from any content
-- **Deck Management**: Organize cards into themed decks
-- **Progress Tracking**: Monitor your learning streak and stats
+---
 
-### ✅ Task Management
-- **AI Extraction**: Automatically identify action items from content
-- **Priority Levels**: Organize by urgency and importance
-- **Due Dates**: Track deadlines with smart suggestions
-- **Status Tracking**: Todo, In Progress, Done workflow
+## Overview
 
-### 🕸️ Knowledge Graph
-- **Mind Maps**: Visualize connections between content
-- **D3.js Visualization**: Interactive force-directed graphs
-- **Relationship Discovery**: AI-suggested connections
-- **Topic Clustering**: Auto-group related content
+B2 Second Brain is a full-stack application that turns scattered notes, files, and web content into a structured, searchable knowledge base. It combines **RAG-based AI chat**, **spaced repetition flashcards**, **automated task extraction**, and an **interactive knowledge graph** — all in a polished dark-themed interface.
 
-## 🛠️ Tech Stack
+---
 
-### Backend
-- **Framework**: FastAPI with async support
-- **Databases**: PostgreSQL (relational) + MongoDB (documents/embeddings)
-- **AI/ML**: SentenceTransformers, CrossEncoder, Multi-provider LLM
-- **Auth**: JWT with HS256
+## Key Features
 
-### Frontend
-- **Framework**: React 18 + TypeScript
-- **Styling**: Tailwind CSS + Framer Motion
-- **State**: Zustand + React Query
-- **Visualization**: D3.js + Recharts
+### Content Management
+- Ingest text, PDF, DOCX, images, audio, video, and web URLs (including YouTube)
+- Automatic OCR for images and speech-to-text for audio/video
+- Smart tagging, favorites, pinning, and archival
 
-## 🚀 Quick Start
+### AI Assistant (RAG)
+- Conversational Q&A grounded in your personal knowledge base
+- Hybrid search: vector similarity + BM25 keyword matching with cross-encoder reranking
+- Multi-provider LLM support — **Google Gemini**, **OpenAI GPT-4**, **Anthropic Claude**
+- Auto-generated summaries and smart content recommendations
+
+### Flashcards & Spaced Repetition
+- SM-2 algorithm for scientifically optimized review scheduling
+- One-click AI generation of flashcard decks from any content
+- Deck organization, progress tracking, and streak monitoring
+
+### Task Management
+- AI-powered extraction of action items from uploaded content
+- Priority levels, due dates, and kanban-style status tracking (Todo → In Progress → Done)
+- Voice input support for hands-free task creation
+
+### Knowledge Graph
+- Interactive D3.js force-directed visualization of content relationships
+- AI-driven link discovery across semantically similar content
+- Filter by subject, tags, and content type
+
+### Collaborative Workspaces
+- Create shared workspaces and invite team members
+- Role-based access control (Owner, Admin, Editor, Viewer)
+- Share individual content items with granular permissions
+
+### Quiz Engine
+- AI-generated quizzes (MCQ, True/False, Short Answer) from any content
+- Configurable difficulty, question count, and topic focus
+- Instant scoring with detailed explanations
+
+---
+
+## Tech Stack
+
+| Layer | Technologies |
+|-------|-------------|
+| **Backend** | FastAPI · SQLAlchemy 2.0 (async) · Alembic · JWT Auth |
+| **Databases** | PostgreSQL (relational) · MongoDB (documents & embeddings) |
+| **AI / ML** | SentenceTransformers · CrossEncoder · Gemini / GPT-4 / Claude |
+| **Frontend** | React 18 · TypeScript · Vite · Tailwind CSS · Framer Motion |
+| **State** | Zustand · React Query |
+| **Visualization** | D3.js (knowledge graph) · Recharts (dashboard analytics) |
+
+---
+
+## Getting Started
 
 ### Prerequisites
-- Python 3.10+
-- Node.js 18+
-- PostgreSQL 14+
-- MongoDB 6+
-- Tesseract OCR (for image text extraction)
-- FFmpeg (for audio/video processing)
 
-### Backend Setup
+| Requirement | Version |
+|-------------|---------|
+| Python | 3.10+ |
+| Node.js | 18+ |
+| PostgreSQL | 14+ |
+| MongoDB | 6+ |
+| Tesseract OCR | Latest |
+| FFmpeg | Latest |
 
-1. **Navigate to backend directory**:
-   ```bash
-   cd backend
-   ```
+### 1. Backend
 
-2. **Create virtual environment**:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # Linux/Mac
-   # or
-   .\venv\Scripts\activate  # Windows
-   ```
+```bash
+cd backend
+python -m venv venv
 
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+# Windows
+.\venv\Scripts\activate
+# macOS / Linux
+source venv/bin/activate
 
-4. **Configure environment**:
-   ```bash
-   cp .env.example .env
-   # Edit .env with your API keys and database credentials
-   ```
-
-5. **Run database migrations**:
-   ```bash
-   alembic upgrade head
-   ```
-
-6. **Start the server**:
-   ```bash
-   uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-   ```
-
-### Frontend Setup
-
-1. **Navigate to frontend directory**:
-   ```bash
-   cd frontend
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-3. **Start development server**:
-   ```bash
-   npm run dev
-   ```
-
-4. **Access the application**:
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8000
-   - API Docs: http://localhost:8000/docs
-
-## 📁 Project Structure
-
-```
-B2_SecondBrain/
-├── backend/
-│   ├── app/
-│   │   ├── api/           # API route handlers
-│   │   ├── core/          # Core modules (config, database, security)
-│   │   ├── models/        # SQLAlchemy database models
-│   │   ├── schemas/       # Pydantic request/response schemas
-│   │   └── services/      # Business logic services
-│   ├── alembic/           # Database migrations
-│   ├── requirements.txt   # Python dependencies
-│   └── README.md
-├── frontend/
-│   ├── src/
-│   │   ├── components/    # Reusable UI components
-│   │   ├── pages/         # Page components
-│   │   ├── services/      # API service layer
-│   │   ├── store/         # Zustand state stores
-│   │   └── types/         # TypeScript interfaces
-│   ├── package.json       # Node dependencies
-│   └── README.md
-└── README.md              # This file
+pip install -r requirements.txt
 ```
 
-## 🔧 Configuration
-
-### Required API Keys
-
-| Provider | Environment Variable | Purpose |
-|----------|---------------------|---------|
-| Google | `GOOGLE_API_KEY` | Gemini LLM |
-| OpenAI | `OPENAI_API_KEY` | GPT models |
-| Anthropic | `ANTHROPIC_API_KEY` | Claude models |
-
-### Database Configuration
+Create a `.env` file (or copy from `.env.example`) with your credentials:
 
 ```env
-# PostgreSQL
+# Databases
 DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/secondbrain
-
-# MongoDB
 MONGODB_URL=mongodb://localhost:27017/secondbrain
+
+# AI Providers (at least one required)
+GOOGLE_API_KEY=your_gemini_key
+OPENAI_API_KEY=your_openai_key
+ANTHROPIC_API_KEY=your_anthropic_key
+
+# Auth
+SECRET_KEY=your_jwt_secret
 ```
 
-## 🎯 Usage
+Run migrations and start the server:
 
-### 1. Create an Account
-Register a new account or log in with existing credentials.
+```bash
+alembic upgrade head
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
 
-### 2. Add Content
-- **Upload Files**: Drag & drop or click to upload
-- **Create Text**: Write notes directly in the editor
-- **Add URLs**: Paste web links to capture articles
+### 2. Frontend
 
-### 3. Ask Questions
-Use the AI Assistant to query your knowledge base:
-- "What are the key points from my marketing notes?"
-- "Summarize my research on machine learning"
-- "What tasks do I have pending?"
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-### 4. Study with Flashcards
-- Review due cards daily
-- Generate new cards from content
-- Track your learning progress
+### 3. Access
 
-### 5. Manage Tasks
-- View extracted action items
-- Organize by priority and status
-- Set and track due dates
+| Service | URL |
+|---------|-----|
+| Application | http://localhost:3000 |
+| API | http://localhost:8000 |
+| Swagger Docs | http://localhost:8000/docs |
+| ReDoc | http://localhost:8000/redoc |
 
-### 6. Explore Knowledge Graph
-- Visualize content relationships
-- Discover hidden connections
-- Filter by content type
+---
 
-## 📝 API Documentation
+## API Keys
 
-Once the backend is running, access interactive API docs at:
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
+At least one AI provider key is required for LLM features:
 
-## 🤝 Contributing
+| Provider | Variable | Models |
+|----------|----------|--------|
+| Google | `GOOGLE_API_KEY` | Gemini 1.5 Pro / Flash |
+| OpenAI | `OPENAI_API_KEY` | GPT-4o / GPT-4 |
+| Anthropic | `ANTHROPIC_API_KEY` | Claude 3.5 Sonnet |
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+---
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- [FastAPI](https://fastapi.tiangolo.com/) - Modern Python web framework
-- [React](https://reactjs.org/) - UI library
-- [SentenceTransformers](https://www.sbert.net/) - Embeddings
-- [Tailwind CSS](https://tailwindcss.com/) - Styling
-- [D3.js](https://d3js.org/) - Visualization
+MIT — see [LICENSE](LICENSE) for details.

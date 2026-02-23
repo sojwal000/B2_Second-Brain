@@ -167,13 +167,13 @@ export default function QuizPage() {
   // ========== LIST VIEW ==========
   if (view === 'list') {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 max-w-7xl">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-              <QuizIcon className="text-primary-400" /> Quizzes
+            <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-2">
+              <QuizIcon className="text-indigo-400" /> Quizzes
             </h1>
-            <p className="text-secondary-400 mt-1">AI-generated quizzes from your content</p>
+            <p className="text-zinc-500 mt-1">AI-generated quizzes from your content</p>
           </div>
           <Button onClick={goToGenerate}>
             <PlayArrow className="w-4 h-4 mr-1" /> Generate Quiz
@@ -182,14 +182,14 @@ export default function QuizPage() {
 
         {isLoading ? (
           <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary-500" />
+            <div className="w-10 h-10 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
           </div>
         ) : quizzes.length === 0 ? (
           <Card>
             <CardContent className="text-center py-12">
-              <QuizIcon className="text-secondary-600 mx-auto mb-4" style={{ fontSize: 48 }} />
-              <h3 className="text-lg font-medium text-secondary-300 mb-2">No Quizzes Yet</h3>
-              <p className="text-secondary-500 mb-4">Generate your first quiz from any content</p>
+              <QuizIcon className="text-zinc-700 mx-auto mb-4" style={{ fontSize: 48 }} />
+              <h3 className="text-lg font-medium text-zinc-400 mb-2">No Quizzes Yet</h3>
+              <p className="text-zinc-600 mb-6">Generate your first quiz from any content</p>
               <Button onClick={goToGenerate}>Generate Quiz</Button>
             </CardContent>
           </Card>
@@ -202,7 +202,8 @@ export default function QuizPage() {
                 animate={{ opacity: 1, y: 0 }}
               >
                 <Card
-                  className="cursor-pointer hover:border-primary-500/50 transition-colors"
+                  className="cursor-pointer"
+                  hoverable
                   onClick={() => handleOpenQuiz(quiz.id)}
                 >
                   <CardContent className="p-4">
@@ -212,9 +213,9 @@ export default function QuizPage() {
                       </h3>
                       <button
                         onClick={(e) => { e.stopPropagation(); setShowDeleteModal(quiz.id) }}
-                        className="text-secondary-500 hover:text-red-400 ml-2"
+                        className="text-zinc-600 hover:text-red-400 ml-2 p-1 rounded-lg hover:bg-zinc-800 transition-all"
                       >
-                        <Delete fontSize="small" />
+                        <Delete style={{ fontSize: 16 }} />
                       </button>
                     </div>
                     <div className="flex items-center gap-2 flex-wrap">
@@ -226,7 +227,7 @@ export default function QuizPage() {
                         <Badge variant="info">{quiz.difficulty}</Badge>
                       )}
                     </div>
-                    <p className="text-xs text-secondary-500 mt-2">
+                    <p className="text-xs text-zinc-600 mt-2">
                       {new Date(quiz.created_at).toLocaleDateString()}
                     </p>
                   </CardContent>
@@ -242,12 +243,11 @@ export default function QuizPage() {
           onClose={() => setShowDeleteModal(null)}
           title="Delete Quiz"
         >
-          <p className="text-secondary-300 mb-4">Are you sure you want to delete this quiz?</p>
+          <p className="text-zinc-400 mb-4">Are you sure you want to delete this quiz?</p>
           <div className="flex gap-2 justify-end">
             <Button variant="ghost" onClick={() => setShowDeleteModal(null)}>Cancel</Button>
             <Button
-              variant="primary"
-              className="bg-red-600 hover:bg-red-700"
+              variant="danger"
               onClick={() => showDeleteModal && handleDelete(showDeleteModal)}
             >
               Delete
@@ -263,23 +263,23 @@ export default function QuizPage() {
     return (
       <div className="space-y-6 max-w-2xl mx-auto">
         <div className="flex items-center gap-3">
-          <button onClick={() => setView('list')} className="text-secondary-400 hover:text-white">
+          <button onClick={() => setView('list')} className="text-zinc-500 hover:text-white transition-colors">
             <ArrowBack />
           </button>
-          <h1 className="text-2xl font-bold text-white">Generate Quiz</h1>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Generate Quiz</h1>
         </div>
 
         <Card>
           <CardContent className="space-y-5 p-6">
             {/* Content Selector */}
             <div>
-              <label className="block text-sm font-medium text-secondary-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-400 mb-2">
                 Select Content
               </label>
               <select
                 value={selectedContentId || ''}
                 onChange={(e) => setSelectedContentId(Number(e.target.value) || null)}
-                className="w-full bg-secondary-800 border border-secondary-700 rounded-lg px-3 py-2 text-white focus:border-primary-500 focus:outline-none"
+                className="w-full bg-zinc-900/80 border border-zinc-800 rounded-xl px-3 py-2.5 text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition-all"
               >
                 <option value="">Choose content...</option>
                 {contents.map((c) => (
@@ -292,7 +292,7 @@ export default function QuizPage() {
 
             {/* Number of Questions */}
             <div>
-              <label className="block text-sm font-medium text-secondary-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-400 mb-2">
                 Number of Questions: {numQuestions}
               </label>
               <input
@@ -301,16 +301,16 @@ export default function QuizPage() {
                 max={30}
                 value={numQuestions}
                 onChange={(e) => setNumQuestions(Number(e.target.value))}
-                className="w-full accent-primary-500"
+                className="w-full accent-indigo-500"
               />
-              <div className="flex justify-between text-xs text-secondary-500 mt-1">
+              <div className="flex justify-between text-xs text-zinc-600 mt-1">
                 <span>3</span><span>30</span>
               </div>
             </div>
 
             {/* Question Types */}
             <div>
-              <label className="block text-sm font-medium text-secondary-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-400 mb-2">
                 Question Types
               </label>
               <div className="flex flex-wrap gap-2">
@@ -323,10 +323,10 @@ export default function QuizPage() {
                   <button
                     key={value}
                     onClick={() => toggleQuestionType(value)}
-                    className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${
+                    className={`px-3 py-1.5 rounded-xl text-sm border transition-all ${
                       questionTypes.includes(value)
-                        ? 'bg-primary-600 border-primary-500 text-white'
-                        : 'bg-secondary-800 border-secondary-700 text-secondary-400 hover:border-secondary-500'
+                        ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-300'
+                        : 'bg-zinc-900/60 border-zinc-800 text-zinc-500 hover:border-zinc-700'
                     }`}
                   >
                     {label}
@@ -337,7 +337,7 @@ export default function QuizPage() {
 
             {/* Difficulty */}
             <div>
-              <label className="block text-sm font-medium text-secondary-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-400 mb-2">
                 Difficulty (optional)
               </label>
               <div className="flex gap-2">
@@ -345,10 +345,10 @@ export default function QuizPage() {
                   <button
                     key={d}
                     onClick={() => setDifficulty(difficulty === d ? '' : d)}
-                    className={`px-3 py-1.5 rounded-lg text-sm border capitalize transition-colors ${
+                    className={`px-3 py-1.5 rounded-xl text-sm border capitalize transition-all ${
                       difficulty === d
-                        ? 'bg-primary-600 border-primary-500 text-white'
-                        : 'bg-secondary-800 border-secondary-700 text-secondary-400 hover:border-secondary-500'
+                        ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-300'
+                        : 'bg-zinc-900/60 border-zinc-800 text-zinc-500 hover:border-zinc-700'
                     }`}
                   >
                     {d}
@@ -364,7 +364,7 @@ export default function QuizPage() {
             >
               {isGenerating ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2" />
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
                   Generating...
                 </>
               ) : (
@@ -388,19 +388,19 @@ export default function QuizPage() {
     return (
       <div className="space-y-6 max-w-3xl mx-auto">
         <div className="flex items-center justify-between">
-          <button onClick={() => setView('list')} className="text-secondary-400 hover:text-white flex items-center gap-1">
-            <ArrowBack fontSize="small" /> Back
+          <button onClick={() => setView('list')} className="text-zinc-500 hover:text-white flex items-center gap-1 transition-colors">
+            <ArrowBack style={{ fontSize: 16 }} /> Back
           </button>
-          <div className="text-secondary-400 text-sm flex items-center gap-2">
-            <Timer fontSize="small" />
+          <div className="text-zinc-500 text-sm flex items-center gap-2">
+            <Timer style={{ fontSize: 16 }} />
             {answeredCount}/{totalQ} answered
           </div>
         </div>
 
         {/* Progress bar */}
-        <div className="w-full bg-secondary-800 rounded-full h-2">
+        <div className="w-full bg-zinc-800 rounded-full h-1.5">
           <div
-            className="bg-primary-500 h-2 rounded-full transition-all"
+            className="bg-gradient-to-r from-indigo-500 to-purple-500 h-1.5 rounded-full transition-all"
             style={{ width: `${((currentQuestion + 1) / totalQ) * 100}%` }}
           />
         </div>
@@ -439,13 +439,13 @@ export default function QuizPage() {
                       <button
                         key={idx}
                         onClick={() => setAnswers(prev => ({ ...prev, [question.id]: option }))}
-                        className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
+                        className={`w-full text-left px-4 py-3 rounded-xl border transition-all ${
                           answers[question.id] === option
-                            ? 'bg-primary-600/20 border-primary-500 text-white'
-                            : 'bg-secondary-800 border-secondary-700 text-secondary-300 hover:border-secondary-500'
+                            ? 'bg-indigo-500/20 border-indigo-500/50 text-white'
+                            : 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:border-zinc-700'
                         }`}
                       >
-                        <span className="font-medium mr-2 text-secondary-500">
+                        <span className="font-medium mr-2 text-zinc-600">
                           {String.fromCharCode(65 + idx)}.
                         </span>
                         {option}
@@ -458,7 +458,7 @@ export default function QuizPage() {
                     placeholder="Type your answer..."
                     value={answers[question.id] || ''}
                     onChange={(e) => setAnswers(prev => ({ ...prev, [question.id]: e.target.value }))}
-                    className="w-full bg-secondary-800 border border-secondary-700 rounded-lg px-4 py-3 text-white focus:border-primary-500 focus:outline-none"
+                    className="w-full bg-zinc-900/80 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition-all"
                   />
                 )}
               </CardContent>
@@ -499,12 +499,12 @@ export default function QuizPage() {
             <button
               key={q.id}
               onClick={() => setCurrentQuestion(idx)}
-              className={`w-8 h-8 rounded-full text-xs font-medium transition-colors ${
+              className={`w-8 h-8 rounded-full text-xs font-medium transition-all ${
                 idx === currentQuestion
-                  ? 'bg-primary-500 text-white'
+                  ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/20'
                   : answers[q.id]
-                  ? 'bg-green-600/30 text-green-400 border border-green-600'
-                  : 'bg-secondary-800 text-secondary-400 border border-secondary-700'
+                  ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-600/50'
+                  : 'bg-zinc-900/60 text-zinc-500 border border-zinc-800'
               }`}
             >
               {idx + 1}
@@ -517,25 +517,25 @@ export default function QuizPage() {
 
   // ========== RESULTS VIEW ==========
   if (view === 'results' && quizResult) {
-    const scoreColor = quizResult.score >= 80 ? 'text-green-400' : quizResult.score >= 50 ? 'text-yellow-400' : 'text-red-400'
+    const scoreColor = quizResult.score >= 80 ? 'text-emerald-400' : quizResult.score >= 50 ? 'text-amber-400' : 'text-red-400'
 
     return (
       <div className="space-y-6 max-w-3xl mx-auto">
         <div className="flex items-center gap-3">
-          <button onClick={() => { setView('list'); setQuizResult(null); setSelectedQuiz(null) }} className="text-secondary-400 hover:text-white">
+          <button onClick={() => { setView('list'); setQuizResult(null); setSelectedQuiz(null) }} className="text-zinc-500 hover:text-white transition-colors">
             <ArrowBack />
           </button>
-          <h1 className="text-2xl font-bold text-white">Quiz Results</h1>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Quiz Results</h1>
         </div>
 
         {/* Score Card */}
         <Card>
           <CardContent className="text-center py-8">
-            <EmojiEvents className="text-yellow-400 mb-2" style={{ fontSize: 48 }} />
+            <EmojiEvents className="text-amber-400 mb-2" style={{ fontSize: 48 }} />
             <h2 className={`text-5xl font-bold ${scoreColor} mb-2`}>
               {quizResult.score.toFixed(1)}%
             </h2>
-            <p className="text-secondary-400">
+            <p className="text-zinc-500">
               {quizResult.correct_count} / {quizResult.total_questions} correct
             </p>
             <div className="flex gap-3 justify-center mt-6">
@@ -553,31 +553,31 @@ export default function QuizPage() {
         <div className="space-y-4">
           <h3 className="text-lg font-medium text-white">Review Answers</h3>
           {quizResult.results.map((q, idx) => (
-            <Card key={q.id} className={`border-l-4 ${q.is_correct ? 'border-l-green-500' : 'border-l-red-500'}`}>
+            <Card key={q.id} className={`border-l-4 ${q.is_correct ? 'border-l-emerald-500' : 'border-l-red-500'}`}>
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
                   <div className={`mt-0.5 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    q.is_correct ? 'bg-green-600/20 text-green-400' : 'bg-red-600/20 text-red-400'
+                    q.is_correct ? 'bg-emerald-600/20 text-emerald-400' : 'bg-red-600/20 text-red-400'
                   }`}>
                     {q.is_correct ? <Check style={{ fontSize: 16 }} /> : <Close style={{ fontSize: 16 }} />}
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-secondary-500 mb-1">Question {idx + 1}</p>
+                    <p className="text-sm text-zinc-600 mb-1">Question {idx + 1}</p>
                     <p className="text-white mb-3">{q.question_text}</p>
 
                     {q.user_answer && (
-                      <p className={`text-sm mb-1 ${q.is_correct ? 'text-green-400' : 'text-red-400'}`}>
+                      <p className={`text-sm mb-1 ${q.is_correct ? 'text-emerald-400' : 'text-red-400'}`}>
                         Your answer: {q.user_answer}
                       </p>
                     )}
                     {!q.is_correct && (
-                      <p className="text-sm text-green-400 mb-1">
+                      <p className="text-sm text-emerald-400 mb-1">
                         Correct answer: {q.correct_answer}
                       </p>
                     )}
                     {q.explanation && (
-                      <p className="text-sm text-secondary-400 mt-2 bg-secondary-800/50 rounded p-2">
-                        💡 {q.explanation}
+                      <p className="text-sm text-zinc-500 mt-2 bg-zinc-800/60 rounded-xl p-3 border border-zinc-800/50">
+                        {q.explanation}
                       </p>
                     )}
                   </div>

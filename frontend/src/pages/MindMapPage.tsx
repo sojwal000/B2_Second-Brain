@@ -314,7 +314,7 @@ export default function MindMapPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+        <div className="w-10 h-10 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
       </div>
     )
   }
@@ -324,32 +324,32 @@ export default function MindMapPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-            <Insights className="text-primary-400" /> Knowledge Graph
+          <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-2">
+            <Insights className="text-indigo-400" /> Knowledge Graph
           </h1>
-          <p className="text-secondary-400">
+          <p className="text-zinc-500 mt-0.5">
             {nodeCount} nodes · {edgeCount} connections · {contentNodes} content items
           </p>
         </div>
         <div className="flex items-center gap-2">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 text-secondary-500" fontSize="small" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-600" style={{ fontSize: 16 }} />
             <input
               type="text"
               placeholder="Search nodes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 pr-3 py-1.5 text-sm bg-secondary-800 border border-secondary-700 rounded-lg text-white focus:border-primary-500 focus:outline-none w-48"
+              className="pl-8 pr-3 py-1.5 text-sm bg-zinc-900/80 border border-zinc-800 rounded-xl text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none w-48 transition-all"
             />
           </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setShowFilters(!showFilters)}
-            className={showFilters ? 'text-primary-400' : ''}
+            className={showFilters ? 'text-indigo-400' : ''}
           >
-            <FilterList fontSize="small" className="mr-1" />
+            <FilterList style={{ fontSize: 16 }} className="mr-1" />
             Filter
           </Button>
           <Button
@@ -358,11 +358,11 @@ export default function MindMapPage() {
             onClick={handleDiscover}
             disabled={isDiscovering}
           >
-            <AutoFixHigh fontSize="small" className="mr-1" />
+            <AutoFixHigh style={{ fontSize: 16 }} className="mr-1" />
             {isDiscovering ? 'Discovering...' : 'Discover Links'}
           </Button>
           <Button variant="ghost" size="sm" onClick={loadMindMap}>
-            <Refresh fontSize="small" className="mr-1" />
+            <Refresh style={{ fontSize: 16 }} className="mr-1" />
             Refresh
           </Button>
         </div>
@@ -380,11 +380,11 @@ export default function MindMapPage() {
             <Card>
               <CardContent className="p-4 flex items-end gap-4 flex-wrap">
                 <div>
-                  <label className="block text-xs text-secondary-400 mb-1">Subject</label>
+                  <label className="block text-xs text-zinc-500 mb-1">Subject</label>
                   <select
                     value={filterSubject}
                     onChange={e => setFilterSubject(e.target.value)}
-                    className="bg-secondary-800 border border-secondary-700 rounded px-2 py-1.5 text-sm text-white focus:outline-none"
+                    className="bg-zinc-900/80 border border-zinc-800 rounded-xl px-2.5 py-1.5 text-sm text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition-all"
                   >
                     <option value="">All Subjects</option>
                     {availableSubjects.map(s => (
@@ -393,24 +393,24 @@ export default function MindMapPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs text-secondary-400 mb-1">Tags (comma-separated)</label>
+                  <label className="block text-xs text-zinc-500 mb-1">Tags (comma-separated)</label>
                   <input
                     type="text"
                     value={filterTags}
                     onChange={e => setFilterTags(e.target.value)}
                     placeholder="e.g. react, typescript"
-                    className="bg-secondary-800 border border-secondary-700 rounded px-2 py-1.5 text-sm text-white focus:outline-none w-48"
+                    className="bg-zinc-900/80 border border-zinc-800 rounded-xl px-2.5 py-1.5 text-sm text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none w-48 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-secondary-400 mb-1">Max Nodes: {maxNodes}</label>
+                  <label className="block text-xs text-zinc-500 mb-1">Max Nodes: {maxNodes}</label>
                   <input
                     type="range"
                     min={10}
                     max={300}
                     value={maxNodes}
                     onChange={e => setMaxNodes(Number(e.target.value))}
-                    className="accent-primary-500 w-32"
+                    className="accent-indigo-500 w-32"
                   />
                 </div>
                 <div className="flex items-center gap-2">
@@ -419,9 +419,9 @@ export default function MindMapPage() {
                     id="includeLinks"
                     checked={includeLinks}
                     onChange={e => setIncludeLinks(e.target.checked)}
-                    className="accent-primary-500"
+                    className="accent-indigo-500"
                   />
-                  <label htmlFor="includeLinks" className="text-sm text-secondary-300">Include links</label>
+                  <label htmlFor="includeLinks" className="text-sm text-zinc-400">Include links</label>
                 </div>
                 <Button size="sm" onClick={applyFilters}>Apply</Button>
               </CardContent>
@@ -437,26 +437,26 @@ export default function MindMapPage() {
             ref={svgRef}
             width="100%"
             height="100%"
-            className="bg-secondary-900"
+            className="bg-zinc-950"
           />
         </div>
 
         {/* Controls */}
-        <div className="absolute bottom-4 right-4 flex flex-col gap-2">
-          <Button variant="secondary" size="sm" onClick={handleZoomIn}>
-            <ZoomIn fontSize="small" />
-          </Button>
-          <Button variant="secondary" size="sm" onClick={handleZoomOut}>
-            <ZoomOut fontSize="small" />
-          </Button>
-          <Button variant="secondary" size="sm" onClick={handleCenter}>
-            <CenterFocusStrong fontSize="small" />
-          </Button>
+        <div className="absolute bottom-4 right-4 flex flex-col gap-1.5">
+          <button onClick={handleZoomIn} className="p-2 rounded-xl bg-zinc-900/90 border border-zinc-800/80 text-zinc-400 hover:text-white hover:border-zinc-700 backdrop-blur-sm transition-all">
+            <ZoomIn style={{ fontSize: 18 }} />
+          </button>
+          <button onClick={handleZoomOut} className="p-2 rounded-xl bg-zinc-900/90 border border-zinc-800/80 text-zinc-400 hover:text-white hover:border-zinc-700 backdrop-blur-sm transition-all">
+            <ZoomOut style={{ fontSize: 18 }} />
+          </button>
+          <button onClick={handleCenter} className="p-2 rounded-xl bg-zinc-900/90 border border-zinc-800/80 text-zinc-400 hover:text-white hover:border-zinc-700 backdrop-blur-sm transition-all">
+            <CenterFocusStrong style={{ fontSize: 18 }} />
+          </button>
         </div>
 
         {/* Legend */}
-        <div className="absolute top-4 left-4 bg-secondary-800/90 rounded-lg p-3 space-y-2">
-          <p className="text-xs text-secondary-400 font-medium">Node Types</p>
+        <div className="absolute top-4 left-4 bg-zinc-900/95 backdrop-blur-sm rounded-xl border border-zinc-800/80 p-3 space-y-2">
+          <p className="text-xs text-zinc-500 font-medium uppercase tracking-wider">Node Types</p>
           {[
             { color: '#4CAF50', label: 'Text' },
             { color: '#2196F3', label: 'Document' },
@@ -467,11 +467,11 @@ export default function MindMapPage() {
           ].map(item => (
             <div key={item.label} className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-              <span className="text-xs text-secondary-300">{item.label}</span>
+              <span className="text-xs text-zinc-400">{item.label}</span>
             </div>
           ))}
-          <div className="border-t border-secondary-700 pt-2 mt-2">
-            <p className="text-xs text-secondary-400 font-medium mb-1">Edge Types</p>
+          <div className="border-t border-zinc-800 pt-2 mt-2">
+            <p className="text-xs text-zinc-500 font-medium mb-1 uppercase tracking-wider">Edge Types</p>
             {[
               { color: '#8b5cf6', label: 'Manual', dash: false },
               { color: '#06b6d4', label: 'Semantic', dash: false },
@@ -483,11 +483,11 @@ export default function MindMapPage() {
                   backgroundColor: item.color,
                   borderTop: item.dash ? `2px dashed ${item.color}` : undefined,
                 }} />
-                <span className="text-xs text-secondary-300">{item.label}</span>
+                <span className="text-xs text-zinc-400">{item.label}</span>
               </div>
             ))}
           </div>
-          <p className="text-[10px] text-secondary-500 mt-1">Double-click node → open content</p>
+          <p className="text-[10px] text-zinc-600 mt-1">Double-click node to open content</p>
         </div>
 
         {/* Node Info Panel */}
@@ -497,7 +497,7 @@ export default function MindMapPage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
-              className="absolute top-4 right-4 w-72 bg-secondary-800 rounded-lg p-4 border border-secondary-700 shadow-lg"
+              className="absolute top-4 right-4 w-72 bg-zinc-900/95 backdrop-blur-sm rounded-xl p-4 border border-zinc-800/80 shadow-xl"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -511,21 +511,21 @@ export default function MindMapPage() {
                 </div>
                 <button
                   onClick={() => setSelectedNode(null)}
-                  className="text-secondary-500 hover:text-white"
+                  className="text-zinc-600 hover:text-white p-1 rounded-lg hover:bg-zinc-800 transition-all"
                 >
-                  <Close fontSize="small" />
+                  <Close style={{ fontSize: 16 }} />
                 </button>
               </div>
               <h3 className="font-medium text-white mb-2">{selectedNode.label}</h3>
               {selectedNode.data && (
-                <div className="space-y-1 text-xs text-secondary-400">
+                <div className="space-y-1 text-xs text-zinc-500">
                   {(selectedNode as any).subject && (
-                    <p>Subject: <span className="text-secondary-200">{(selectedNode as any).subject}</span></p>
+                    <p>Subject: <span className="text-zinc-300">{(selectedNode as any).subject}</span></p>
                   )}
                   {(selectedNode as any).tags?.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
                       {(selectedNode as any).tags.map((tag: string) => (
-                        <span key={tag} className="px-1.5 py-0.5 bg-secondary-700 rounded text-[10px]">{tag}</span>
+                        <span key={tag} className="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700/50 rounded-md text-[10px] text-zinc-400">{tag}</span>
                       ))}
                     </div>
                   )}
@@ -544,7 +544,7 @@ export default function MindMapPage() {
                   className="mt-3 w-full"
                   onClick={() => navigate(`/content/${selectedNode.id}`)}
                 >
-                  <OpenInNew fontSize="small" className="mr-1" /> Open Content
+                  <OpenInNew style={{ fontSize: 16 }} className="mr-1" /> Open Content
                 </Button>
               )}
             </motion.div>

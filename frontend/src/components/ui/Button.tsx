@@ -9,28 +9,28 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ variant = 'primary', size = 'md', isLoading, children, className = '', disabled, ...props }, ref) => {
-    const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-secondary-900'
+    const baseStyles = 'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-950'
 
     const variants = {
-      primary: 'bg-primary-500 hover:bg-primary-600 text-white focus:ring-primary-500',
-      secondary: 'bg-secondary-700 hover:bg-secondary-600 text-white focus:ring-secondary-500',
-      ghost: 'hover:bg-secondary-800 text-secondary-300 hover:text-white focus:ring-secondary-500',
-      danger: 'bg-red-500 hover:bg-red-600 text-white focus:ring-red-500',
+      primary: 'bg-indigo-500 hover:bg-indigo-600 text-white focus:ring-indigo-500 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30',
+      secondary: 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200 focus:ring-zinc-600 border border-zinc-700/50 hover:border-zinc-600/50',
+      ghost: 'hover:bg-zinc-800/80 text-zinc-400 hover:text-zinc-200 focus:ring-zinc-700',
+      danger: 'bg-red-500/90 hover:bg-red-500 text-white focus:ring-red-500 shadow-lg shadow-red-500/20',
     }
 
     const sizes = {
-      sm: 'px-3 py-1.5 text-sm',
-      md: 'px-4 py-2 text-sm',
-      lg: 'px-6 py-3 text-base',
+      sm: 'px-3 py-1.5 text-xs gap-1.5',
+      md: 'px-4 py-2 text-sm gap-2',
+      lg: 'px-6 py-3 text-base gap-2',
     }
 
     return (
       <motion.button
         ref={ref}
         whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+        whileTap={{ scale: 0.97 }}
         className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${
-          disabled || isLoading ? 'opacity-50 cursor-not-allowed' : ''
+          disabled || isLoading ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''
         } ${className}`}
         disabled={disabled || isLoading}
         {...props}

@@ -293,7 +293,7 @@ export default function ContentDetailPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+        <div className="w-10 h-10 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
       </div>
     )
   }
@@ -302,9 +302,9 @@ export default function ContentDetailPage() {
     return (
       <div className="text-center py-12">
         <h2 className="text-xl font-semibold text-white mb-2">Content not found</h2>
-        <p className="text-secondary-400 mb-4">The content you're looking for doesn't exist.</p>
+        <p className="text-zinc-500 mb-4">The content you're looking for doesn't exist.</p>
         <Button onClick={() => navigate('/content')}>
-          <ArrowBack fontSize="small" className="mr-1" />
+          <ArrowBack style={{ fontSize: 16 }} className="mr-1" />
           Back to Content
         </Button>
       </div>
@@ -320,13 +320,13 @@ export default function ContentDetailPage() {
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button variant="ghost" onClick={() => navigate('/content')}>
-          <ArrowBack fontSize="small" />
+          <ArrowBack style={{ fontSize: 16 }} />
         </Button>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold text-white">{content.title}</h1>
+          <h1 className="text-2xl font-bold text-white tracking-tight">{content.title}</h1>
           <div className="flex items-center gap-2 mt-1">
             <Badge variant="primary">{content.content_type}</Badge>
-            <span className="text-secondary-500 text-sm">
+            <span className="text-zinc-600 text-sm">
               Added {new Date(content.created_at).toLocaleDateString()}
             </span>
           </div>
@@ -342,7 +342,7 @@ export default function ContentDetailPage() {
               size="sm"
               onClick={() => toggleFavorite(content.id)}
             >
-              <Star fontSize="small" className="mr-1" />
+              <Star style={{ fontSize: 16 }} className="mr-1" />
               {content.is_favorite ? 'Favorited' : 'Favorite'}
             </Button>
             <Button
@@ -350,7 +350,7 @@ export default function ContentDetailPage() {
               size="sm"
               onClick={() => togglePin(content.id)}
             >
-              <PushPin fontSize="small" className="mr-1" />
+              <PushPin style={{ fontSize: 16 }} className="mr-1" />
               {content.is_pinned ? 'Pinned' : 'Pin'}
             </Button>
             <Button
@@ -358,7 +358,7 @@ export default function ContentDetailPage() {
               size="sm"
               onClick={() => toggleArchive(content.id)}
             >
-              <Archive fontSize="small" className="mr-1" />
+              <Archive style={{ fontSize: 16 }} className="mr-1" />
               {content.is_archived ? 'Archived' : 'Archive'}
             </Button>
           </>
@@ -370,12 +370,12 @@ export default function ContentDetailPage() {
         >
           {isSpeaking ? (
             <>
-              <Stop fontSize="small" className="mr-1" />
+              <Stop style={{ fontSize: 16 }} className="mr-1" />
               Stop Reading
             </>
           ) : (
             <>
-              <VolumeUp fontSize="small" className="mr-1" />
+              <VolumeUp style={{ fontSize: 16 }} className="mr-1" />
               Read Aloud
             </>
           )}
@@ -391,7 +391,7 @@ export default function ContentDetailPage() {
               setShowShareModal(true)
             }}
           >
-            <Share fontSize="small" className="mr-1" />
+            <Share style={{ fontSize: 16 }} className="mr-1" />
             Share
           </Button>
         )}
@@ -399,28 +399,28 @@ export default function ContentDetailPage() {
         {isOwner && (
           <>
             <Button variant="ghost" size="sm" onClick={() => setShowFlashcardModal(true)} disabled={isProcessing}>
-              <Style fontSize="small" className="mr-1" />
+              <Style style={{ fontSize: 16 }} className="mr-1" />
               Generate Flashcards
             </Button>
             <Button variant="ghost" size="sm" onClick={handleExtractTasks} disabled={isProcessing}>
-              <Task fontSize="small" className="mr-1" />
+              <Task style={{ fontSize: 16 }} className="mr-1" />
               Extract Tasks
             </Button>
             <Button variant="ghost" size="sm" onClick={() => setShowEditModal(true)} disabled={isProcessing}>
-              <Edit fontSize="small" className="mr-1" />
+              <Edit style={{ fontSize: 16 }} className="mr-1" />
               Edit
             </Button>
             <Button variant="ghost" size="sm" onClick={handleReprocess} disabled={isProcessing}>
-              <Refresh fontSize="small" className={isProcessing ? 'animate-spin mr-1' : 'mr-1'} />
+              <Refresh style={{ fontSize: 16 }} className={isProcessing ? 'animate-spin mr-1' : 'mr-1'} />
               Reprocess
             </Button>
             <Button variant="danger" size="sm" onClick={handleDelete}>
-              <Delete fontSize="small" />
+              <Delete style={{ fontSize: 16 }} />
             </Button>
           </>
         )}
         {!isOwner && (
-          <span className="text-secondary-500 text-sm italic">Viewing shared content (read-only)</span>
+          <span className="text-zinc-500 text-sm italic">Viewing shared content (read-only)</span>
         )}
       </div>
 
@@ -445,7 +445,7 @@ export default function ContentDetailPage() {
         <Card>
           <CardContent>
             <h3 className="text-lg font-semibold text-white mb-2">Summary</h3>
-            <p className="text-secondary-300">{content.summary}</p>
+            <p className="text-zinc-400 leading-relaxed">{content.summary}</p>
           </CardContent>
         </Card>
       )}
@@ -468,28 +468,28 @@ export default function ContentDetailPage() {
           <h3 className="text-lg font-semibold text-white mb-4">Details</h3>
           <dl className="grid grid-cols-2 gap-4">
             <div>
-              <dt className="text-secondary-500 text-sm">Type</dt>
+              <dt className="text-zinc-600 text-sm">Type</dt>
               <dd className="text-white capitalize">{content.content_type}</dd>
             </div>
             <div>
-              <dt className="text-secondary-500 text-sm">Status</dt>
+              <dt className="text-zinc-600 text-sm">Status</dt>
               <dd className="text-white capitalize">{content.processing_status}</dd>
             </div>
             <div>
-              <dt className="text-secondary-500 text-sm">Created</dt>
+              <dt className="text-zinc-600 text-sm">Created</dt>
               <dd className="text-white">
                 {new Date(content.created_at).toLocaleString()}
               </dd>
             </div>
             <div>
-              <dt className="text-secondary-500 text-sm">Updated</dt>
+              <dt className="text-zinc-600 text-sm">Updated</dt>
               <dd className="text-white">
                 {new Date(content.updated_at).toLocaleString()}
               </dd>
             </div>
             {content.source && (
               <div className="col-span-2">
-                <dt className="text-secondary-500 text-sm">Source</dt>
+                <dt className="text-zinc-600 text-sm">Source</dt>
                 <dd className="text-white break-all">{content.source}</dd>
               </div>
             )}
@@ -502,12 +502,12 @@ export default function ContentDetailPage() {
         <Card>
           <CardContent>
             <div className="flex items-center gap-2 mb-4">
-              <Recommend fontSize="small" className="text-primary-400" />
+              <Recommend style={{ fontSize: 18 }} className="text-indigo-400" />
               <h3 className="text-lg font-semibold text-white">Related Content</h3>
             </div>
             {isLoadingRecs ? (
               <div className="flex items-center justify-center py-6">
-                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary-500"></div>
+                <div className="w-6 h-6 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -515,23 +515,23 @@ export default function ContentDetailPage() {
                   <button
                     key={rec.id}
                     onClick={() => navigate(`/content/${rec.id}`)}
-                    className="flex items-start gap-3 p-3 rounded-lg bg-secondary-800 hover:bg-secondary-700 transition-colors text-left group"
+                    className="flex items-start gap-3 p-3 rounded-xl bg-zinc-800/60 hover:bg-zinc-800 transition-all text-left group border border-zinc-800/50 hover:border-zinc-700"
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="text-white text-sm font-medium truncate group-hover:text-primary-300">
+                      <p className="text-white text-sm font-medium truncate group-hover:text-indigo-300">
                         {rec.title}
                       </p>
                       {rec.summary && (
-                        <p className="text-secondary-400 text-xs mt-1 line-clamp-2">{rec.summary}</p>
+                        <p className="text-zinc-500 text-xs mt-1 line-clamp-2">{rec.summary}</p>
                       )}
                       <div className="flex items-center gap-2 mt-2">
                         <Badge variant="default" size="sm">{rec.content_type}</Badge>
-                        <span className="text-xs text-secondary-500">
+                        <span className="text-xs text-zinc-600">
                           {Math.round(rec.similarity_score * 100)}% match
                         </span>
                       </div>
                     </div>
-                    <OpenInNew fontSize="small" className="text-secondary-500 group-hover:text-primary-400 mt-1 flex-shrink-0" />
+                    <OpenInNew style={{ fontSize: 16 }} className="text-zinc-600 group-hover:text-indigo-400 mt-1 flex-shrink-0" />
                   </button>
                 ))}
               </div>
@@ -611,7 +611,7 @@ export default function ContentDetailPage() {
       >
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-secondary-300 mb-1">
+            <label className="block text-sm font-medium text-zinc-400 mb-1">
               Message (optional)
             </label>
             <Input
@@ -621,11 +621,11 @@ export default function ContentDetailPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-secondary-300 mb-1">
+            <label className="block text-sm font-medium text-zinc-400 mb-1">
               Search users
             </label>
             <div className="relative">
-              <PersonSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-500" />
+              <PersonSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
               <Input
                 placeholder="Type a username or name..."
                 value={shareUserQuery}
@@ -635,7 +635,7 @@ export default function ContentDetailPage() {
             </div>
           </div>
           {isSearchingUsers && (
-            <div className="text-center text-secondary-400 text-sm py-2">Searching...</div>
+            <div className="text-center text-zinc-500 text-sm py-2">Searching...</div>
           )}
           {userSearchResults.length > 0 && (
             <div className="max-h-48 overflow-y-auto space-y-1">
@@ -644,24 +644,24 @@ export default function ContentDetailPage() {
                   key={user.id}
                   onClick={() => handleShare(user.username)}
                   disabled={isSharing}
-                  className="w-full flex items-center gap-3 p-3 rounded-lg bg-secondary-800 hover:bg-secondary-700 transition-colors text-left"
+                  className="w-full flex items-center gap-3 p-3 rounded-xl bg-zinc-800/60 hover:bg-zinc-800 transition-all text-left border border-zinc-800/50 hover:border-zinc-700"
                 >
-                  <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center text-white text-sm font-bold">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold">
                     {(user.full_name || user.username).charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-white text-sm font-medium truncate">{user.username}</p>
                     {user.full_name && (
-                      <p className="text-secondary-400 text-xs truncate">{user.full_name}</p>
+                      <p className="text-zinc-500 text-xs truncate">{user.full_name}</p>
                     )}
                   </div>
-                  <Send fontSize="small" className="text-primary-400" />
+                  <Send style={{ fontSize: 16 }} className="text-indigo-400" />
                 </button>
               ))}
             </div>
           )}
           {shareUserQuery.length >= 2 && !isSearchingUsers && userSearchResults.length === 0 && (
-            <p className="text-secondary-500 text-sm text-center py-2">No users found</p>
+            <p className="text-zinc-600 text-sm text-center py-2">No users found</p>
           )}
           <div className="flex justify-end">
             <Button variant="ghost" onClick={() => setShowShareModal(false)}>

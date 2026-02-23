@@ -49,23 +49,43 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-secondary-900 flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
-      >
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-primary-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+    <div className="min-h-screen bg-zinc-950 flex">
+      {/* Left: Branding */}
+      <div className="hidden lg:flex lg:flex-1 items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 via-purple-600/10 to-transparent" />
+        <div className="absolute top-1/3 left-1/3 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/3 right-1/3 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl" />
+        <div className="relative z-10 max-w-md px-8">
+          <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mb-8 shadow-2xl shadow-indigo-500/30">
             <span className="text-white text-2xl font-bold">B2</span>
           </div>
-          <h1 className="text-2xl font-bold text-white">Create Account</h1>
-          <p className="text-secondary-400 mt-2">Start building your Second Brain</p>
+          <h1 className="text-4xl font-bold text-white mb-4 tracking-tight">Start Building</h1>
+          <p className="text-lg text-zinc-400 leading-relaxed">
+            Create your personal knowledge hub. Upload documents, take notes, and let AI help you learn faster.
+          </p>
         </div>
+      </div>
 
-        {/* Form */}
-        <div className="bg-secondary-800 rounded-xl border border-secondary-700 p-6">
+      {/* Right: Form */}
+      <div className="flex-1 flex items-center justify-center p-6">
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4 }}
+          className="w-full max-w-sm"
+        >
+          {/* Logo (mobile only) */}
+          <div className="lg:hidden text-center mb-8">
+            <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-2xl shadow-indigo-500/30">
+              <span className="text-white text-xl font-bold">B2</span>
+            </div>
+          </div>
+
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-white tracking-tight">Create account</h2>
+            <p className="text-zinc-500 mt-1">Get started with your Second Brain</p>
+          </div>
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <Input
               label="Full Name"
@@ -94,7 +114,7 @@ export default function RegisterPage() {
             <Input
               label="Password"
               type="password"
-              placeholder="••••••••"
+              placeholder="Min 8 characters"
               error={errors.password?.message}
               {...register('password')}
             />
@@ -102,31 +122,31 @@ export default function RegisterPage() {
             <Input
               label="Confirm Password"
               type="password"
-              placeholder="••••••••"
+              placeholder="Repeat password"
               error={errors.confirmPassword?.message}
               {...register('confirmPassword')}
             />
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full !py-3"
               isLoading={isLoading}
             >
               Create Account
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <span className="text-secondary-400">Already have an account? </span>
+          <p className="mt-8 text-center text-sm text-zinc-500">
+            Already have an account?{' '}
             <Link
               to="/login"
-              className="text-primary-400 hover:text-primary-300 font-medium"
+              className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
             >
               Sign in
             </Link>
-          </div>
-        </div>
-      </motion.div>
+          </p>
+        </motion.div>
+      </div>
     </div>
   )
 }

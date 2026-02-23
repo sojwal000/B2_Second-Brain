@@ -3,12 +3,20 @@
 @tailwind utilities;
 
 :root {
-  --color-primary: #0ea5e9;
-  --color-secondary: #64748b;
-  --color-background: #0f172a;
-  --color-surface: #1e293b;
-  --color-text: #f1f5f9;
-  --color-text-muted: #94a3b8;
+  --color-primary: #6366f1;
+  --color-primary-light: #818cf8;
+  --color-accent: #8b5cf6;
+  --color-background: #09090b;
+  --color-surface: #18181b;
+  --color-surface-hover: #27272a;
+  --color-border: #27272a;
+  --color-border-light: #3f3f46;
+  --color-text: #fafafa;
+  --color-text-muted: #a1a1aa;
+  --color-text-secondary: #71717a;
+  --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
+  --gradient-surface: linear-gradient(180deg, rgba(99,102,241,0.05) 0%, transparent 100%);
+  --shadow-glow: 0 0 20px rgba(99,102,241,0.15);
 }
 
 * {
@@ -32,21 +40,21 @@ body {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-background);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-secondary);
-  border-radius: 4px;
+  background: #3f3f46;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #7c8ca5;
+  background: #52525b;
 }
 
 /* Focus styles */
@@ -57,58 +65,101 @@ body {
 
 /* Selection */
 ::selection {
-  background-color: rgba(14, 165, 233, 0.3);
+  background-color: rgba(99, 102, 241, 0.3);
 }
 
 /* Custom utility classes */
 @layer components {
   .btn-primary {
-    @apply bg-primary-500 hover:bg-primary-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply bg-indigo-500 hover:bg-indigo-600 text-white font-medium py-2 px-4 rounded-xl transition-all duration-200 shadow-lg shadow-indigo-500/20;
   }
 
   .btn-secondary {
-    @apply bg-secondary-700 hover:bg-secondary-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply bg-zinc-800 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-xl border border-zinc-700/50 transition-all duration-200;
   }
 
   .btn-ghost {
-    @apply hover:bg-secondary-800 text-secondary-300 hover:text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply hover:bg-zinc-800/80 text-zinc-400 hover:text-white font-medium py-2 px-4 rounded-xl transition-all duration-200;
   }
 
   .card {
-    @apply bg-secondary-800 rounded-xl border border-secondary-700 p-6;
+    @apply bg-zinc-900/80 rounded-2xl border border-zinc-800/80 p-6 backdrop-blur-sm;
+  }
+
+  .card-glass {
+    @apply bg-zinc-900/60 rounded-2xl border border-zinc-800/50 p-6 backdrop-blur-xl;
   }
 
   .input {
-    @apply bg-secondary-900 border border-secondary-700 rounded-lg px-4 py-2 text-white placeholder-secondary-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors duration-200;
+    @apply bg-zinc-900/80 border border-zinc-800 rounded-xl px-4 py-2.5 text-white placeholder-zinc-500 focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all duration-200;
   }
 
   .label {
-    @apply block text-sm font-medium text-secondary-300 mb-1;
+    @apply block text-sm font-medium text-zinc-400 mb-1.5;
   }
 
   .sidebar-link {
-    @apply flex items-center gap-3 px-4 py-3 text-secondary-400 hover:text-white hover:bg-secondary-800 rounded-lg transition-colors duration-200;
+    @apply flex items-center gap-3 px-3 py-2.5 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800/80 rounded-xl transition-all duration-200 text-sm font-medium;
   }
 
   .sidebar-link-active {
-    @apply flex items-center gap-3 px-4 py-3 text-white bg-primary-500/10 border-r-2 border-primary-500 rounded-l-lg;
+    @apply flex items-center gap-3 px-3 py-2.5 text-white bg-indigo-500/10 rounded-xl text-sm font-medium relative;
+  }
+
+  .sidebar-link-active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 60%;
+    background: linear-gradient(180deg, #6366f1, #8b5cf6);
+    border-radius: 0 4px 4px 0;
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-violet-400;
+  }
+
+  .glass-panel {
+    @apply bg-zinc-900/60 backdrop-blur-xl border border-zinc-800/50 rounded-2xl;
   }
 }
 
 /* Animation classes */
 @layer utilities {
   .animate-in {
-    animation: fadeIn 0.3s ease-in-out;
+    animation: fadeIn 0.4s ease-out;
   }
 
   .slide-in-bottom {
-    animation: slideUp 0.3s ease-out;
+    animation: slideUp 0.4s ease-out;
   }
+
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes slideUp {
+  0% { transform: translateY(10px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes glow {
+  from { box-shadow: 0 0 10px rgba(99,102,241,0.1); }
+  to { box-shadow: 0 0 20px rgba(99,102,241,0.2); }
 }
 
 /* Markdown content styles */
 .markdown-content {
-  @apply text-secondary-200;
+  @apply text-zinc-300 leading-relaxed;
 }
 
 .markdown-content h1,
@@ -144,23 +195,23 @@ body {
 }
 
 .markdown-content code {
-  @apply bg-secondary-900 px-1.5 py-0.5 rounded text-primary-400 font-mono text-sm;
+  @apply bg-zinc-800 px-1.5 py-0.5 rounded-md text-indigo-300 font-mono text-sm border border-zinc-700/50;
 }
 
 .markdown-content pre {
-  @apply bg-secondary-900 p-4 rounded-lg overflow-x-auto mb-4;
+  @apply bg-zinc-950 p-4 rounded-xl overflow-x-auto mb-4 border border-zinc-800;
 }
 
 .markdown-content pre code {
-  @apply bg-transparent p-0;
+  @apply bg-transparent p-0 border-0;
 }
 
 .markdown-content blockquote {
-  @apply border-l-4 border-primary-500 pl-4 italic text-secondary-400 my-4;
+  @apply border-l-4 border-indigo-500 pl-4 italic text-zinc-400 my-4;
 }
 
 .markdown-content a {
-  @apply text-primary-400 hover:text-primary-300 underline;
+  @apply text-indigo-400 hover:text-indigo-300 underline decoration-indigo-400/30 underline-offset-2 transition-colors;
 }
 
 .markdown-content table {
@@ -169,9 +220,9 @@ body {
 
 .markdown-content th,
 .markdown-content td {
-  @apply border border-secondary-700 px-4 py-2 text-left;
+  @apply border border-zinc-800 px-4 py-2.5 text-left;
 }
 
 .markdown-content th {
-  @apply bg-secondary-800 font-semibold;
+  @apply bg-zinc-900 font-semibold text-zinc-300;
 }
