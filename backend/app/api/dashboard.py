@@ -434,7 +434,7 @@ async def get_today_focus(
 
 
 # ============================================================================
-# Capabilities / What Can I Do For Me
+# Capabilities / What Can B2 Do For You
 # ============================================================================
 
 @router.get("/capabilities")
