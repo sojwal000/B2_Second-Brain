@@ -38,6 +38,21 @@ export const dashboardService = {
     return response.data
   },
 
+  async getCapabilities(): Promise<{
+    capabilities: Array<{
+      id: string
+      title: string
+      description: string
+      icon: string
+      color: string
+      path: string
+      features: string[]
+    }>
+  }> {
+    const response = await api.get('/dashboard/capabilities')
+    return response.data
+  },
+
   async getTodayFocus(): Promise<{
     due_flashcards: number
     pending_tasks: number
