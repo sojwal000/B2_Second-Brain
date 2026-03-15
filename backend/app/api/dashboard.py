@@ -434,6 +434,140 @@ async def get_today_focus(
 
 
 # ============================================================================
+# Capabilities / What Can I Do For Me
+# ============================================================================
+
+@router.get("/capabilities")
+async def get_capabilities():
+    """Return structured list of application capabilities to help users discover features."""
+    return {
+        "capabilities": [
+            {
+                "id": "content",
+                "title": "Capture & Organize Knowledge",
+                "description": "Upload and manage content from multiple sources — text notes, documents, images, audio, video, URLs, and code snippets.",
+                "icon": "Article",
+                "color": "blue",
+                "path": "/content",
+                "features": [
+                    "Upload documents (PDF, Word, PowerPoint, Excel)",
+                    "Save text notes and web articles",
+                    "Import images with automatic OCR text extraction",
+                    "Transcribe audio and video files",
+                    "Store and highlight code snippets",
+                    "Organize with tags, subjects, and favorites",
+                ],
+            },
+            {
+                "id": "assistant",
+                "title": "AI-Powered Q&A",
+                "description": "Ask questions about your stored knowledge and get answers grounded in your personal content with source references.",
+                "icon": "SmartToy",
+                "color": "indigo",
+                "path": "/assistant",
+                "features": [
+                    "Ask natural language questions about your content",
+                    "Get answers with cited sources and confidence scores",
+                    "Multi-turn chat conversations with context",
+                    "Semantic search across all your knowledge",
+                    "Follow-up question suggestions",
+                    "Multiple AI provider support (Gemini, OpenAI, Claude)",
+                ],
+            },
+            {
+                "id": "flashcards",
+                "title": "Spaced Repetition Study",
+                "description": "Generate flashcards from your content and study with a scientifically-proven spaced repetition algorithm.",
+                "icon": "Style",
+                "color": "purple",
+                "path": "/flashcards",
+                "features": [
+                    "AI-generated flashcards from any content",
+                    "Spaced repetition scheduling for optimal retention",
+                    "Organize cards into decks",
+                    "Track mastery levels and review progress",
+                    "Multiple card types (basic, cloze, reverse)",
+                    "Daily review reminders",
+                ],
+            },
+            {
+                "id": "tasks",
+                "title": "Task Management",
+                "description": "Create tasks manually or let AI extract action items from your content. Track progress with a kanban board.",
+                "icon": "Task",
+                "color": "amber",
+                "path": "/tasks",
+                "features": [
+                    "Create tasks with priorities and due dates",
+                    "AI-powered task extraction from documents",
+                    "Kanban board with drag-and-drop status updates",
+                    "Voice input for quick task creation",
+                    "Project-based organization",
+                    "Overdue task tracking and reminders",
+                ],
+            },
+            {
+                "id": "mindmap",
+                "title": "Knowledge Graph",
+                "description": "Visualize connections between your content as an interactive knowledge graph to discover hidden relationships.",
+                "icon": "AccountTree",
+                "color": "emerald",
+                "path": "/mindmap",
+                "features": [
+                    "Interactive force-directed graph visualization",
+                    "Automatic relationship detection between content",
+                    "Create manual links between related items",
+                    "Explore content clusters and themes",
+                    "Visual navigation through your knowledge base",
+                ],
+            },
+            {
+                "id": "quiz",
+                "title": "AI-Generated Quizzes",
+                "description": "Test your understanding with automatically generated quizzes based on your stored content.",
+                "icon": "Quiz",
+                "color": "pink",
+                "path": "/quiz",
+                "features": [
+                    "Auto-generated questions from your content",
+                    "Multiple question types (MCQ, true/false, fill-in-the-blank)",
+                    "Track quiz scores and progress",
+                    "Focus on weak areas for targeted learning",
+                ],
+            },
+            {
+                "id": "workspaces",
+                "title": "Collaborative Workspaces",
+                "description": "Create shared workspaces to collaborate with others on knowledge collections.",
+                "icon": "Workspaces",
+                "color": "cyan",
+                "path": "/workspaces",
+                "features": [
+                    "Create and manage shared workspaces",
+                    "Invite collaborators to your knowledge base",
+                    "Share content and flashcard decks",
+                    "Collaborative note-taking and organization",
+                ],
+            },
+            {
+                "id": "dashboard",
+                "title": "Dashboard & Analytics",
+                "description": "Track your learning progress with activity timelines, study streaks, and content analytics.",
+                "icon": "Dashboard",
+                "color": "orange",
+                "path": "/dashboard",
+                "features": [
+                    "Overview of all content, tasks, and flashcards",
+                    "Weekly activity tracking and study streaks",
+                    "Content breakdown by type and subject",
+                    "Today's focus with due items and suggestions",
+                ],
+            },
+        ]
+    }
+
+
+# ============================================================================
 # Helper Functions
 # ============================================================================
 

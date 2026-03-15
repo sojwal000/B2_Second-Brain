@@ -10,6 +10,7 @@ import {
   AccountTree,
   Quiz,
   Workspaces,
+  HelpOutline,
   Settings,
   Logout,
   Menu,
@@ -29,6 +30,7 @@ const navItems = [
   { path: '/mindmap', label: 'Mind Map', icon: AccountTree },
   { path: '/quiz', label: 'Quizzes', icon: Quiz },
   { path: '/workspaces', label: 'Workspaces', icon: Workspaces },
+  { path: '/help', label: 'Help', icon: HelpOutline },
 ]
 
 export default function Layout() {
